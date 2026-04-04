@@ -1,0 +1,670 @@
+/* ========== 营造技艺模块 ========== */
+.tech-box {
+    background: linear-gradient(135deg, #faf8f0 0%, #f5f5dc 100%);
+    border: 2px solid var(--wood-brown);
+    border-radius: 8px;
+    padding: 30px;
+    margin: 20px 0;
+}
+
+.tech-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.struct-diagram {
+    flex: 1;
+    position: relative;
+    height: 350px;
+    min-width: 300px;
+}
+
+.struct-part {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.struct-part:hover { transform: translateX(-50%) scale(1.05); filter: brightness(1.2); }
+
+.part-roof {
+    top: 0;
+    width: 0;
+    height: 0;
+    border-left: 120px solid transparent;
+    border-right: 120px solid transparent;
+    border-bottom: 80px solid var(--primary-red);
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.part-wall {
+    top: 80px;
+    width: 180px;
+    height: 100px;
+    background: #fff;
+    border: 3px solid var(--wood-brown);
+    color: var(--wood-brown) !important;
+    text-shadow: none !important;
+}
+
+.part-base {
+    top: 180px;
+    width: 220px;
+    height: 50px;
+    background: #708090;
+    clip-path: polygon(3% 0, 97% 0, 100% 100%, 0 100%);
+}
+
+.tech-info {
+    flex: 1;
+    min-width: 250px;
+}
+
+.tech-card {
+    background: white;
+    border-left: 4px solid var(--gold);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tech-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+}
+
+.tech-card.active {
+    background: #fff9e6;
+    border-left-color: var(--primary-red);
+    box-shadow: 0 4px 20px rgba(212,175,55,0.3);
+}
+
+.tech-card h4 {
+    color: var(--primary-red);
+    margin-bottom: 8px;
+    font-size: 1.1em;
+}
+
+.tech-card p {
+    color: #666;
+    font-size: 0.9em;
+    line-height: 1.6;
+}
+
+/* ========== 时间轴模块 ========== */
+.timeline-river {
+    position: relative;
+    padding: 50px 0;
+    overflow: hidden;
+}
+
+.river-flow {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 6px;
+    background: linear-gradient(to bottom, transparent 0%, var(--primary-red) 10%, var(--gold) 50%, var(--primary-red) 90%, transparent 100%);
+    transform: translateX(-50%);
+    overflow: hidden;
+}
+
+.river-flow::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.8), transparent);
+    animation: river-flow 3s linear infinite;
+}
+
+@keyframes river-flow {
+    0% { top: -100%; }
+    100% { top: 100%; }
+}
+
+.timeline-boat {
+    position: relative;
+    margin: 60px 0;
+    width: 45%;
+    opacity: 0;
+    transform: translateX(-100px) rotate(-5deg);
+    transition: all 0.8s ease;
+}
+
+.timeline-boat:nth-child(even) {
+    margin-left: 55%;
+    transform: translateX(100px) rotate(5deg);
+}
+
+.timeline-boat.visible {
+    opacity: 1;
+    transform: translateX(0) rotate(0);
+}
+
+.boat-body {
+    background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #8B4513 100%);
+    border-radius: 50px 10px 50px 10px;
+    padding: 25px 30px;
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3), inset 0 2px 10px rgba(255,255,255,0.2);
+    position: relative;
+    border: 3px solid var(--gold);
+}
+
+.timeline-boat:nth-child(even) .boat-body { border-radius: 10px 50px 10px 50px; }
+
+.boat-sail {
+    position: absolute;
+    top: -40px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+}
+
+.timeline-boat:nth-child(odd) .boat-sail {
+    right: 30px;
+    border-width: 0 40px 60px 0;
+    border-color: transparent var(--paper-beige) transparent transparent;
+}
+
+.timeline-boat:nth-child(even) .boat-sail {
+    left: 30px;
+    border-width: 60px 40px 0 0;
+    border-color: var(--paper-beige) transparent transparent transparent;
+}
+
+.timeline-compass {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, var(--gold) 0%, var(--primary-red) 70%);
+    border: 4px solid white;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 12px;
+    z-index: 10;
+}
+
+.timeline-boat:nth-child(odd) .timeline-compass { right: -60px; }
+.timeline-boat:nth-child(even) .timeline-compass { left: -60px; }
+
+.dynasty-badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--primary-red);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+/* ========== 3D模型模块 ========== */
+.model-container {
+    width: 100%;
+    height: 600px;
+    background: var(--paper-beige);
+    border: 3px solid var(--gold);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+#modelCanvas { width: 100%; height: 100%; display: block; }
+
+.part-tooltip {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(139, 90, 43, 0.95);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    max-width: 300px;
+    z-index: 100;
+    transition: all 0.3s ease;
+    font-family: 'Noto Serif SC', serif;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    display: none;
+}
+
+.color-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    padding: 15px;
+    background: #fff;
+    border: 2px solid #f0f0f0;
+    border-radius: 8px;
+}
+
+.color-picker-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.color-picker-wrap input[type="color"] {
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.preset-colors { display: flex; gap: 8px; }
+
+.color-btn {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.color-btn:hover { transform: scale(1.1); border-color: var(--gold); }
+
+.undo-btn, .reset-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Noto Serif SC', serif;
+    transition: all 0.3s;
+}
+
+.undo-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+}
+
+.undo-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.reset-btn {
+    background: var(--primary-red);
+    color: white;
+    border: 2px solid var(--gold);
+}
+
+.undo-btn:hover:not(:disabled) { background: #764ba2; }
+.reset-btn:hover { background: var(--gold); color: var(--primary-red); }
+
+.part-tab {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #8B4513;
+    color: #fff8e1;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: "宋体", serif;
+    font-size: 16px;
+    border: 2px solid #D4AF37;
+    transition: all 0.3s ease;
+}
+
+.part-tab:hover {
+    background: #A0522D;
+    transform: translateY(-2px);
+}
+
+/* ========== 问答模块 ========== */
+.quiz-container {
+    background: linear-gradient(135deg, #f5f5dc 0%, #fff 100%);
+    border: 3px solid var(--primary-red);
+    padding: 40px;
+    margin-top: 40px;
+    position: relative;
+}
+
+.quiz-question {
+    font-size: 1.3em;
+    margin-bottom: 20px;
+    color: var(--primary-red);
+    font-weight: 600;
+}
+
+.quiz-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.quiz-option {
+    padding: 15px;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+    background: white;
+}
+
+.quiz-option:hover {
+    border-color: var(--gold);
+    background: rgba(212,175,55,0.1);
+}
+
+.quiz-option.correct {
+    background: rgba(34,197,94,0.2);
+    border-color: #22c55e;
+}
+
+.quiz-option.wrong {
+    background: rgba(239,68,68,0.2);
+    border-color: #ef4444;
+}
+
+/* ========== 音乐播放器（悬浮展开版） ========== */
+.music-player {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+/* 圆形图标（默认显示） */
+.music-icon {
+    width: 55px;
+    height: 55px;
+    background: linear-gradient(135deg, #8B1A1A, #5a2e0e);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    border: 2px solid #D4AF37;
+    position: relative;
+    z-index: 10;
+}
+
+.music-icon:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.icon-inner {
+    font-size: 26px;
+    animation: musicPulse 2s ease-in-out infinite;
+}
+
+@keyframes musicPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.1); opacity: 0.9; }
+}
+
+/* 完整播放器面板（默认隐藏） */
+.player-panel {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.8) translateX(20px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: bottom right;
+    z-index: 9;
+}
+
+/* 悬停时显示完整面板 */
+.music-player:hover .music-icon {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.5);
+}
+
+.music-player:hover .player-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1) translateX(0);
+}
+
+/* 播放器容器样式 */
+.player-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(139, 26, 26, 0.95);
+    border: 2px solid #D4AF37;
+    border-radius: 60px;
+    padding: 8px 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+}
+
+.player-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* 音乐封面 */
+.music-cover {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f5f5dc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+	flex-shrink: 0;
+}
+
+.cover-img {
+    width: 100%;
+    height: 100%;	
+    object-fit: cover;
+    filter: sepia(20%);
+}
+
+/* 播放按钮 */
+.play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(139, 26, 26, 0.85);
+    color: #f5f5dc;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.play-btn:hover {
+    background: #f5f5dc;
+    color: #8B1A1A;
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* 音乐信息 */
+.music-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 100px;
+}
+
+.music-name {
+    color: #ffd700;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: 'Noto Serif SC', serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+.music-status {
+    color: #f5f5dc;
+    font-size: 11px;
+    font-family: 'Noto Serif SC', serif;
+    opacity: 0.8;
+}
+
+/* 控制按钮组 */
+.music-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+	justify-content: center;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid #ffd700;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    color: #ffd700;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	flex-shrink: 0;  /* 防止被压缩 */
+    line-height: 1;   /* 修复文字垂直居中 */
+    padding: 0;       /* 移除内边距 */
+}
+
+.control-btn:hover {
+    background: #ffd700;
+    color: #8B1A1A;
+    transform: scale(1.05);
+}
+
+/* 本地音乐上传 */
+.music-upload {
+    position: relative;
+}
+
+.upload-label {
+    color: #f5f5dc;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Noto Serif SC', serif;
+    transition: color 0.3s ease;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 30px;
+    border: 1px solid #ffd700;
+    white-space: nowrap;
+}
+
+.upload-label:hover {
+    background: #ffd700;
+    color: #8B1A1A;
+}
+
+.upload-input {
+    display: none;
+}
+
+/* ========== 响应式适配 ========== */
+@media (max-width: 768px) {
+    .tech-layout {
+        flex-direction: column;
+    }
+    .struct-diagram {
+        height: 280px;
+    }
+    .quiz-options {
+        grid-template-columns: 1fr;
+    }
+    .timeline-boat,
+    .timeline-boat:nth-child(even) {
+        width: 80%;
+        margin-left: 10% !important;
+        margin-right: 10%;
+    }
+    .timeline-compass,
+    .timeline-boat:nth-child(odd) .timeline-compass,
+    .timeline-boat:nth-child(even) .timeline-compass {
+        left: 50% !important;
+        right: auto !important;
+        top: -25px;
+        transform: translateX(-50%);
+    }
+    .river-flow {
+        left: 20px;
+    }
+    .model-container {
+        height: 400px;
+    }
+    .color-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .reset-btn {
+        margin-left: 0;
+        width: 100%;
+    }
+    /* 音乐播放器移动端适配 */
+    .music-icon {
+        width: 48px;
+        height: 48px;
+    }
+    .icon-inner {
+        font-size: 22px;
+    }
+    .player-container {
+        padding: 6px 15px;
+        gap: 10px;
+    }
+    .music-cover {
+        width: 38px;
+        height: 38px;
+    }
+    .music-name {
+        font-size: 12px;
+        max-width: 80px;
+    }
+    .music-status {
+        font-size: 10px;
+    }
+    .control-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    .upload-label {
+        font-size: 10px;
+        padding: 4px 8px;
+    }
+}
