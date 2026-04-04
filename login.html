@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录/注册页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", "宋体", sans-serif;
+        }
+
+        body {
+            background-color: #f8f5f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d9c8b8' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 520px;
+            background-color: #fff;
+            padding: 45px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(150, 80, 80, 0.15);
+            border: 1px solid #e8d8c8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #c00, #ffd700, #c00);
+        }
+
+        .card-title {
+            text-align: center;
+            font-size: 32px;
+            color: #900;
+            margin-bottom: 25px;
+            letter-spacing: 5px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .card-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 3px;
+            background-color: #ffd700;
+            margin: 12px auto 0;
+            border-radius: 1.5px;
+        }
+
+        .tab-group {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .tab {
+            font-size: 22px;
+            color: #666;
+            cursor: pointer;
+            padding: 8px 0;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #900;
+            border-bottom: 3px solid #ffd700;
+        }
+
+        .tab:hover:not(.active) {
+            color: #c00;
+            border-bottom: 3px solid #f5e0a8;
+        }
+
+        .form-container {
+            position: relative;
+            width: 100%;
+        }
+
+        .login-form {
+            display: block;
+        }
+
+        .register-form {
+            display: none;
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px 14px 40px;
+            border: 1px solid #e0d0b8;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: #fefbf8;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #c00;
+            box-shadow: 0 0 0 3px rgba(192, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .input-group input::placeholder {
+            color: #b8a898;
+        }
+
+        .input-group::before {
+            content: "";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .login-form .input-group:nth-of-type(1)::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23900' viewBox='0 0 16 16'%3E%3Cpath d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/%3E%3C/svg%3E");
+        }
+
+        .login-form .input-group:nth-of-type(2)::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23900' viewBox='0 0 16 16'%3E%3Cpath d='M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z'/%3E%3C/svg%3E");
+        }
+
+        .register-form .input-group:nth-of-type(1)::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23900' viewBox='0 0 16 16'%3E%3Cpath d='M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z'/%3E%3C/svg%3E");
+        }
+
+        .register-form .input-group:nth-of-type(2)::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23900' viewBox='0 0 16 16'%3E%3Cpath d='M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z'/%3E%3C/svg%3E");
+        }
+
+        .register-form .input-group:nth-of-type(3)::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='%23900' viewBox='0 0 16 16'%3E%3Cpath d='M13.106 7.222c0-2.967-2.249-5.032-5.482-5.032-3.35 0-5.646 2.318-5.646 5.702 0 3.493 2.235 5.708 5.762 5.708.862 0 1.689-.123 2.304-.335v-.862c-.43.199-1.354.328-2.29.328-2.926 0-4.813-1.88-4.813-4.798 0-2.844 1.921-4.881 4.594-4.881 2.735 0 4.608 1.688 4.608 4.156 0 1.682-.554 2.769-1.416 2.769-.492 0-.772-.28-.772-.76V5.206H8.923v.834h-.11c-.266-.595-.881-.964-1.6-.964-1.4 0-2.378 1.162-2.378 2.823 0 1.737.957 2.906 2.379 2.906.8 0 1.415-.39 1.709-1.087h.11c.081.67.703 1.148 1.503 1.148 1.572 0 2.57-1.415 2.57-3.643zm-7.177.704c0-1.197.54-1.907 1.456-1.907.93 0 1.524.738 1.524 1.907S8.308 9.84 7.371 9.84c-.895 0-1.442-.725-1.442-1.914z'/%3E%3C/svg%3E");
+        }
+
+        .agreement {
+            margin-bottom: 30px;
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 2px;
+        }
+
+        .agreement input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #c00;
+            cursor: pointer;
+        }
+
+        .agreement a {
+            color: #900;
+            text-decoration: none;
+        }
+
+        .agreement a:hover {
+            text-decoration: underline;
+        }
+
+        /* 登录/注册按钮统一样式 */
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #900;
+            color: #fff;
+            border: 2px solid #ffd700;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #c00;
+            box-shadow: 0 4px 8px rgba(192, 0, 0, 0.2);
+        }
+
+        .action-btn:hover::before {
+            left: 100%;
+        }
+
+        .logout-btn {
+            background-color: #666;
+            border-color: #999;
+        }
+
+        .logout-btn:hover {
+            background-color: #555;
+        }
+
+        .message-area {
+            border-top: 1px dashed #ffd700;
+            padding-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .message-area h3 {
+            color: #900;
+            font-size: 20px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .message-empty {
+            color: #999;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .message-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .message-item {
+            background: #fef9e6;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #ffd700;
+        }
+
+        .message-item strong {
+            color: #900;
+        }
+
+        .message-item .msg-time {
+            color: #999;
+            font-size: 12px;
+            float: right;
+        }
+
+        .back-home {
+            text-align: center;
+        }
+
+        .back-home a {
+            color: #900;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .back-home a:hover {
+            text-decoration: underline;
+        }
+
+        .message-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            width: 100%;
+            max-width: 400px;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            border: 2px solid #ffd700;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 20px;
+            color: #900;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .modal-textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border: 1px solid #e0d0b8;
+            border-radius: 4px;
+            resize: none;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .submit-message {
+            width: 100%;
+            padding: 12px;
+            background-color: #900;
+            color: #fff;
+            border: 2px solid #ffd700;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .submit-message:hover {
+            background-color: #c00;
+        }
+        
+        /* 用户信息栏 */
+        .user-info {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #fef9e6;
+            border-radius: 12px;
+            border: 1px solid #e8d8c8;
+        }
+        
+        .user-info .username {
+            font-size: 18px;
+            color: #900;
+            font-weight: bold;
+        }
+        
+        .user-info .welcome {
+            font-size: 14px;
+            color: #B87C4E;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <h2 class="card-title" id="pageTitle">登录/注册</h2>
+
+        <!-- 已登录时显示用户信息（默认隐藏） -->
+        <div id="userInfo" class="user-info" style="display: none;">
+            <div class="username" id="displayUsername"></div>
+            <div class="welcome">欢迎回来！</div>
+        </div>
+
+        <!-- 未登录时显示登录/注册选项卡（默认显示） -->
+        <div id="authSection">
+            <div class="tab-group">
+                <div class="tab active" id="loginTab">登录</div>
+                <div class="tab" id="registerTab">注册</div>
+            </div>
+
+            <div class="form-container">
+                <!-- 登录表单 -->
+                <div class="login-form" id="loginForm">
+                    <div class="input-group">
+                        <input type="text" id="loginUsername" placeholder="请输入账号">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="loginPassword" placeholder="请输入密码">
+                    </div>
+                    <div class="agreement">
+                        <input type="checkbox" id="loginAgreement" checked>
+                        <span>我已阅读并同意《<a href="#">用户协议</a>》和《<a href="#">隐私政策</a>》</span>
+                    </div>
+                    <button class="action-btn" onclick="handleLogin()">登录</button>
+                </div>
+
+                <!-- 注册表单 -->
+                <div class="register-form" id="registerForm">
+                    <div class="input-group">
+                        <input type="text" id="registerUsername" placeholder="请输入账号">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="registerPassword" placeholder="请输入密码">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="registerConfirmPwd" placeholder="请确认密码">
+                    </div>
+                    <div class="agreement">
+                        <input type="checkbox" id="registerAgreement">
+                        <span>我已阅读并同意《<a href="#">用户协议</a>》和《<a href="#">隐私政策</a>》</span>
+                    </div>
+                    <button class="action-btn" onclick="handleRegister()">注册</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 已登录时显示的按钮区域（默认隐藏） -->
+        <div id="loggedInSection" style="display: none;">
+            <button class="action-btn" onclick="openMessageModal()">📝 我要留言</button>
+            <button class="action-btn logout-btn" onclick="handleLogout()">🚪 退出登录</button>
+        </div>
+
+        <!-- 留言区 -->
+        <div class="message-area" id="messageArea" style="display: none;">
+            <h3>📖 最新留言</h3>
+            <div class="message-list" id="messageList"></div>
+        </div>
+
+        <div class="back-home">
+            <a href="index.html" id="backLink">← 返回首页</a>
+        </div>
+    </div>
+
+    <!-- 留言弹窗 -->
+    <div class="message-modal" id="messageModal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal()">×</button>
+            <h3 style="color: #900; text-align: center; margin-bottom: 20px;">发布留言</h3>
+            <textarea class="modal-textarea" id="messageContent" placeholder="请输入你的留言..."></textarea>
+            <button class="submit-message" onclick="submitMessageFromModal()">提交留言</button>
+        </div>
+    </div>
+
+    <script>
+        // 获取留言数据
+        function getComments() {
+            const comments = localStorage.getItem('comments');
+            return comments ? JSON.parse(comments) : [];
+        }
+
+        // 保存留言数据
+        function saveComments(comments) {
+            localStorage.setItem('comments', JSON.stringify(comments));
+        }
+
+        // 渲染留言列表
+        function renderComments() {
+            const comments = getComments();
+            const messageList = document.getElementById('messageList');
+            const messageArea = document.getElementById('messageArea');
+            
+            if (!messageList) return;
+            
+            if (comments.length === 0) {
+                messageList.innerHTML = '<p style="color: #999; text-align: center;">暂无留言，快来发布第一条吧～</p>';
+            } else {
+                let html = '';
+                for (let i = 0; i < comments.length; i++) {
+                    const c = comments[i];
+                    html += `
+                        <div class="message-item">
+                            <strong>${escapeHtml(c.username)}</strong>
+                            <span class="msg-time">${c.time}</span>
+                            <p style="margin-top: 8px; color: #4a3b2a;">${escapeHtml(c.content)}</p>
+                        </div>
+                    `;
+                }
+                messageList.innerHTML = html;
+            }
+            
+            // 登录后显示留言区
+            if (isLogin) {
+                messageArea.style.display = 'block';
+            } else {
+                messageArea.style.display = 'none';
+            }
+        }
+
+        // 防XSS攻击
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 添加留言
+        function addComment(username, content) {
+            const comments = getComments();
+            const newComment = {
+                id: Date.now(),
+                username: username,
+                content: content,
+                time: new Date().toLocaleString()
+            };
+            comments.unshift(newComment);
+            saveComments(comments);
+            renderComments();
+        }
+
+        // 全局变量
+        let isLogin = false;
+        let currentUsername = '';
+
+        // DOM元素
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const authSection = document.getElementById('authSection');
+        const loggedInSection = document.getElementById('loggedInSection');
+        const userInfo = document.getElementById('userInfo');
+        const displayUsername = document.getElementById('displayUsername');
+        const pageTitle = document.getElementById('pageTitle');
+
+        // 检查登录状态并更新UI
+        function checkLoginStatus() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                isLogin = true;
+                currentUsername = savedUser;
+                updateUIForLoggedIn();
+            } else {
+                isLogin = false;
+                currentUsername = '';
+                updateUIForLoggedOut();
+            }
+            renderComments();
+        }
+
+        // 更新UI为已登录状态
+        function updateUIForLoggedIn() {
+            // 隐藏登录/注册区域
+            authSection.style.display = 'none';
+            // 显示已登录区域
+            loggedInSection.style.display = 'block';
+            // 显示用户信息
+            userInfo.style.display = 'block';
+            displayUsername.textContent = currentUsername;
+            // 修改页面标题
+            pageTitle.textContent = '个人中心';
+        }
+
+        // 更新UI为未登录状态
+        function updateUIForLoggedOut() {
+            // 显示登录/注册区域
+            authSection.style.display = 'block';
+            // 隐藏已登录区域
+            loggedInSection.style.display = 'none';
+            // 隐藏用户信息
+            userInfo.style.display = 'none';
+            // 恢复页面标题
+            pageTitle.textContent = '登录/注册';
+        }
+
+        // 登录/注册标签切换
+        if (loginTab && registerTab) {
+            loginTab.addEventListener('click', function() {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+            });
+
+            registerTab.addEventListener('click', function() {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                registerForm.style.display = 'block';
+                loginForm.style.display = 'none';
+            });
+        }
+
+        // 登录逻辑
+        function handleLogin() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
+            const agreement = document.getElementById('loginAgreement').checked;
+
+            if (!username || !password) {
+                alert('请输入完整的账号和密码！');
+                return;
+            }
+            if (!agreement) {
+                alert('请阅读并同意用户协议和隐私政策！');
+                return;
+            }
+
+            // 登录成功
+            isLogin = true;
+            currentUsername = username;
+            localStorage.setItem('currentUser', username);
+            
+            alert(`登录成功！欢迎回来，${username}！`);
+            updateUIForLoggedIn();
+            renderComments();
+        }
+
+        // 注册逻辑
+        function handleRegister() {
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value.trim();
+            const confirmPwd = document.getElementById('registerConfirmPwd').value.trim();
+            const agreement = document.getElementById('registerAgreement').checked;
+
+            if (!username || !password || !confirmPwd) {
+                alert('请输入完整的账号、密码和确认密码！');
+                return;
+            }
+            if (password !== confirmPwd) {
+                alert('两次输入的密码不一致，请重新输入！');
+                return;
+            }
+            if (!agreement) {
+                alert('请阅读并同意用户协议和隐私政策！');
+                return;
+            }
+
+            // 注册成功，自动登录
+            isLogin = true;
+            currentUsername = username;
+            localStorage.setItem('currentUser', username);
+            
+            alert(`注册成功！欢迎加入，${username}！`);
+            updateUIForLoggedIn();
+            renderComments();
+        }
+
+        // 退出登录
+        function handleLogout() {
+            if (confirm('确定要退出登录吗？')) {
+                isLogin = false;
+                currentUsername = '';
+                localStorage.removeItem('currentUser');
+                updateUIForLoggedOut();
+                renderComments();
+                alert('已退出登录');
+            }
+        }
+
+        // 打开留言弹窗
+        function openMessageModal() {
+            document.getElementById('messageModal').style.display = 'flex';
+            document.getElementById('messageContent').value = '';
+        }
+
+        // 关闭留言弹窗
+        function closeModal() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+
+        // 从弹窗提交留言
+        function submitMessageFromModal() {
+            const content = document.getElementById('messageContent').value.trim();
+            
+            if (!content) {
+                alert('请输入留言内容！');
+                return;
+            }
+            
+            if (!currentUsername) {
+                alert('请先登录！');
+                closeModal();
+                return;
+            }
+            
+            addComment(currentUsername, content);
+            alert('留言发布成功！');
+            closeModal();
+        }
+
+        // 点击遮罩层关闭弹窗
+        document.getElementById('messageModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // 页面加载时检查登录状态
+        checkLoginStatus();
+    </script>
+</body>
+</html>

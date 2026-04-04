@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>华夏营造 - 中国古代建筑艺术</title>
+    
+    <!-- 外部依赖 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <!-- Three.js 模块映射（只保留一个） -->
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+        }
+      }
+    </script>
+	<script>
+		window.location.hash = '#top';
+	</script>
+    
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+<body id="top">
+
+<!-- 古风花瓣飘落特效 -->
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 花瓣容器 - 铺满全屏、不影响点击 */
+#petals {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+    overflow: hidden;
+}
+
+/* 单个花瓣样式 */
+.petal {
+    position: absolute;
+    background: #ffd6e6;
+    border-radius: 100% 0 100% 30%;
+    transform: rotate(0deg);
+    animation: fall 8s linear infinite, sway 3s ease-in-out infinite alternate;
+    opacity: 0.7;
+}
+
+/* 下落动画 */
+@keyframes fall {
+    0% {
+        top: -10%;
+        opacity: 0.8;
+    }
+    100% {
+        top: 110%;
+        opacity: 0;
+    }
+}
+
+/* 左右摇摆 */
+@keyframes sway {
+    0% { transform: rotate(0deg) translateX(0); }
+    50% { transform: rotate(90deg) translateX(30px); }
+    100% { transform: rotate(180deg) translateX(-30px); }
+}
+
+.container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        /* 标题样式 */
+        #pageTitle { /* 新增ID */
+            text-align: center;
+            font-size: 3em;
+            color: #8B1A1A; /* 深红色标题 */
+            margin-bottom: 10px;
+            letter-spacing: 8px;
+            font-weight: normal;
+        }
+        #pageSubtitle { /* 新增ID */
+            text-align: center;
+            font-size: 1.2em;
+            color: #8B5A2B;
+            margin-bottom: 50px;
+            letter-spacing: 4px;
+            font-style: italic;
+        }
+        /* 答题容器 */
+        #quizContainer {
+            background-color: #FFFFFF;
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid #D9B38C;
+            box-shadow: 0 4px 12px rgba(139, 26, 26, 0.08);
+        }
+        /* 问题样式 */
+        #question {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #F0E6D2;
+            color: #5A2E18;
+        }
+        /* 选项容器（新增ID） */
+        #optionsContainer {
+            margin-bottom: 20px;
+        }
+        /* 选项样式 */
+        .quiz-option {
+            padding: 18px 25px;
+            margin: 12px 0;
+            border: 1px solid #D9B38C;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: #F9F6F0;
+            font-size: 1.1em;
+        }
+        .quiz-option:hover {
+            background-color: #F0E6D2;
+            border-color: #8B5A2B;
+            transform: translateX(5px);
+        }
+        .quiz-option.correct {
+            background-color: #F2F8F2;
+            border-color: #6B8E23;
+            color: #556B2F;
+        }
+        .quiz-option.wrong {
+            background-color: #FFF0F0;
+            border-color: #CD5C5C;
+            color: #8B0000;
+        }
+        /* 结果面板 */
+        #resultPanel { /* 新增ID */
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+        /* 知识点面板 */
+        #knowledgePanel {
+            margin-top: 25px;
+            padding: 25px;
+            background-color: #F9F6F0;
+            border: 1px solid #E0D0B0;
+            border-radius: 4px;
+        }
+        #knowledgePanel h4 {
+            font-size: 1.3em;
+            color: #8B1A1A;
+            margin-bottom: 15px;
+            font-weight: normal;
+            border-bottom: 1px dashed #D9B38C;
+            padding-bottom: 10px;
+        }
+        #knowledgePanel ul {
+            padding-left: 30px;
+            margin-bottom: 20px;
+        }
+        #knowledgePanel li {
+            margin: 8px 0;
+        }
+        #knowledgePanel div[onclick] {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #FFFFFF;
+            border-radius: 4px;
+            border: 1px solid #E0D0B0;
+            cursor: pointer;
+        }
+        #knowledgePanel div[onclick]:hover {
+            background-color: #F0E6D2;
+        }
+        /* 按钮样式 - 匹配参考图的中式风格 */
+        #nextBtn, #restartBtn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 15px 40px;
+            background-color: #8B1A1A;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-family: "SimSun", "宋体";
+            letter-spacing: 3px;
+            transition: all 0.3s ease;
+        }
+        #nextBtn:hover, #restartBtn:hover {
+            background-color: #A52A2A;
+            transform: scale(1.05);
+        }
+        /* 得分显示（新增ID） */
+        #scoreDisplay {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 30px;
+            color: #8B5A2B;
+        }
+        #scoreDisplay span {
+            color: #8B1A1A;
+            font-weight: bold;
+        }
+        /* 最终结果页 */
+        #finalResult {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        #finalResult h3 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #8B1A1A;
+            font-weight: normal;
+        }
+        #finalResult p {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+        }
+        #knowledgeSummary { /* 新增ID */
+            text-align: left;
+            margin-top: 30px;
+            padding: 25px;
+            background-color: #F9F6F0;
+            border: 1px solid #E0D0B0;
+            border-radius: 4px;
+        }
+        #knowledgeSummary h4 {
+            font-size: 1.4em;
+            color: #8B1A1A;
+            margin-bottom: 15px;
+            font-weight: normal;
+            border-bottom: 1px dashed #D9B38C;
+            padding-bottom: 10px;
+        }
+        #knowledgeSummary ul {
+            padding-left: 30px;
+        }
+        #knowledgeSummary li {
+            margin: 10px 0;
+            font-size: 1.1em;
+        }
+
+
+</style>
+
+ 
+<!-- 花瓣容器 -->
+<div id="petals"></div>
+
+<script>
+// 生成花瓣
+function createPetals() {
+    const petals = document.getElementById('petals');
+    const count = 20; // 花瓣数量
+    for (let i = 0; i < count; i++) {
+        let p = document.createElement('div');
+        p.classList.add('petal');
+        
+        // 随机大小、位置、时长
+        let size = Math.random() * 12 + 8;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDuration = Math.random() * 5 + 5 + 's';
+        p.style.animationDelay = Math.random() * 8 + 's';
+        
+        // 随机粉色
+        let colors = ['#ffd6e6', '#ffc0d9', '#ffe6f2', '#ffb0c8'];
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        
+        petals.appendChild(p);
+    }
+}
+window.addEventListener('DOMContentLoaded', createPetals);
+</script>
+
+    <!-- 固定顶部导航栏（带下拉菜单） -->
+<div class="navbar">
+    <div class="nav-container">
+        <div class="logo">🏛️ 中国古建筑</div>
+        
+        <!-- 一级导航菜单 -->
+        <div class="nav-links">
+            <!-- 一级菜单1：古建筑欣赏（含二级下拉菜单） -->
+            <div class="dropdown">
+                <a href="#" class="dropbtn">🏛️ 古建筑欣赏</a>
+                <div class="dropdown-content">
+                    <a href="#palace">🏯 皇家宫殿</a>
+                    <a href="#official">🏛️ 官府衙门</a>
+                    <a href="#folk">🏡 民居建筑</a>
+                    <a href="#bridge">🌉 古桥名迹</a>
+                </div>
+            </div>
+            <span>|</span>
+            
+            <!-- 一级菜单2：建筑大百科（含二级下拉菜单） -->
+            <div class="dropdown">
+                <a href="#" class="dropbtn">📚 建筑大百科</a>
+                <div class="dropdown-content">
+                    <a href="#quiz">❓ 知识问答</a>
+                    <a href="#timeline">📜 历史长河</a>
+                </div>
+            </div>
+            <span>|</span>
+            
+            <!-- 一级菜单3：营造技艺（无下拉，直接跳转） -->
+            <a href="#structure" class="direct-link">🔨 营造技艺</a>
+            <span>|</span>
+            
+            <!-- 一级菜单4：3D模型上色（无下拉，直接跳转） -->
+			
+			 <div class="dropdown">
+                <a href="#" class="dropbtn">🎨 妙趣营造</a>
+                <div class="dropdown-content">
+                    <a href="#3dmodel">🏯 古建华容道</a>
+                    <a href="#coloring-model">🖌️ 古建填色</a>
+                </div>
+            </div>
+                </div>
+
+        <div class="auth-buttons" id="authButtons">
+			<!-- 未登录时显示 -->
+			<a href="login.html" id="loginBtn" style="color: #fff; text-decoration: none; padding: 8px 20px; border: 1px solid #ffd700; border-radius: 4px;">登录</a>
+			<a href="login.html" id="registerBtn" style="color: #fff; text-decoration: none; padding: 8px 20px; border: 1px solid #ffd700; border-radius: 4px;">注册</a>
+			
+			<!-- 已登录时显示（默认隐藏） -->
+			<span id="userDisplay" style="display: none; color: #ffd700; margin-right: 15px;"></span>
+			<a href="javascript:void(0)" id="logoutBtn" style="display: none; color: #fff; text-decoration: none; padding: 8px 20px; border: 1px solid #ffd700; border-radius: 4px;">退出</a>
+		</div>
+    </div>
+</div>
+	<!-- 主标题 -->
+	<header style="text-align: center; padding: 150px 20px 100px; position: relative;">
+		<!-- 印章装饰 -->
+		<div class="seal" style="position: absolute; 
+			top: 120px; right: 20%; 
+			width: 80px; 
+			height: 80px; 
+			border: 3px solid #8B1A1A; 
+			border-radius: 5px; display: flex; 
+			align-items: center; justify-content: 
+			center; color: #8B1A1A; 
+			font-family: 'Ma Shan Zheng', cursive; 
+			font-size: 2em; 
+			transform: rotate(-15deg); 
+			opacity: 0.8;">营造
+		</div>
+		
+		<h1 class="font-calligraphy" style="font-size: 5em; 
+			color: #8B1A1A; 
+			text-shadow: 3px 3px 6px 
+			rgba(0,0,0,0.2); 
+			margin-bottom: 20px; 
+			font-family: 'Ma Shan Zheng', cursive;">华夏营造			
+		</h1>
+		
+		<p style="font-size: 1.5em; color: #666; letter-spacing: 0.5em;">中国古代建筑艺术鉴赏</p>
+		
+		<div style="margin-top: 30px; 
+			width: 200px; height: 3px; 
+			background: linear-gradient(to right, transparent, #D4AF37, transparent); 
+			margin-left: auto; 
+			margin-right: auto;">
+		</div>
+	</header>
+
+    <!-- 页面主要内容 -->
+	<div class="main-content">
+		
+		<!-- ========== 皇家宫殿模块 ========== -->
+		<div id="palace" class="section">
+			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🏯 皇家宫殿</h2>
+			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+				<!-- 紫禁城卡片 -->
+				<div class="building-card" onclick="openModal('forbidden')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+					<img src="image/zjc.jpg" alt="北京紫禁城" style="width: 100%; height: 220px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513; margin-bottom: 10px;">🏯 北京紫禁城</h3>
+						<p style="color: #666; line-height: 1.6;">明清两代皇宫，世界现存规模最大的木质结构古建筑群。中轴对称，前朝后寝，体现皇权至高无上。</p>
+						<div style="margin-top: 15px; display: flex; gap: 10px;">
+							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">九开间</span>
+							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">重檐庑殿顶</span>
+						</div>
+					</div>
+				</div>
+				<!-- 布达拉宫卡片 -->
+				<div class="building-card" onclick="openModal('potala')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+					<img src="image/budalagong.jpg" alt="拉萨布达拉宫" style="width: 100%; height: 220px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513; margin-bottom: 10px;">🏔️ 拉萨布达拉宫</h3>
+						<p style="color: #666; line-height: 1.6;">集宫殿、城堡和寺院于一体的宏伟建筑，依山而建，气势雄伟，是藏式古建筑的杰出代表。</p>
+						<div style="margin-top: 15px; display: flex; gap: 10px;">
+							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">依山而建</span>
+							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">藏式风格</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ========== 官府衙门模块 ========== -->
+		<div id="official" class="section">
+			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🏛️ 官府衙门</h2>
+			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+				<!-- 平遥县衙卡片 -->
+				<div class="building-card" onclick="openModal('county')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+					<img src="image/pyxy.jpg" alt="平遥县衙" style="width: 100%; height: 220px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513; margin-bottom: 10px;">🏛️ 平遥县衙</h3>
+						<p style="color: #666; line-height: 1.6;">中国现存规模最大的县衙，始建于北魏，定型于元明清。六进院落，中轴对称，左文右武，前朝后寝。</p>
+						<div style="margin-top: 15px; display: flex; gap: 10px;">
+							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">六进院落</span>
+							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">明代遗构</span>
+						</div>
+					</div>
+				</div>
+				<!-- 曲阜孔庙卡片 -->
+				<div class="building-card" onclick="openModal('confucius')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+					<img src="image/km.jpg" alt="曲阜孔庙" style="width: 100%; height: 220px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513; margin-bottom: 10px;">📖 曲阜孔庙</h3>
+						<p style="color: #666; line-height: 1.6;">祭祀孔子的礼制建筑群，九进院落，贯穿在一条中轴线上，左右对称排列，宏伟壮丽。</p>
+						<div style="margin-top: 15px; display: flex; gap: 10px;">
+							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">九进院落</span>
+							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">礼制建筑</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ========== 民居建筑模块 ========== -->
+		<div id="folk" class="section">
+			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🏡 民居建筑</h2>
+			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+				<!-- 四合院卡片 -->
+				<div class="building-card" onclick="openModal('courtyard')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+					<img src="image/siheyuan.jpg" alt="北京四合院" style="width: 100%; height: 200px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513;">🏠 北京四合院</h3>
+						<p style="color: #666;">中轴对称，坐北朝南，封闭式布局，体现宗法礼制。</p>
+					</div>
+				</div>
+				<!-- 土楼卡片 -->
+				<div class="building-card" onclick="openModal('tulou')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+					<img src="image/tulou.jpg" alt="福建土楼" style="width: 100%; height: 200px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513;">🏯 福建土楼</h3>
+						<p style="color: #666;">圆形或方形围合式民居，防御性强，聚族而居。</p>
+					</div>
+				</div>
+				<!-- 徽派建筑卡片 -->
+				<div class="building-card" onclick="openModal('hui')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+					<img src="image/huipai.jpg" alt="徽派建筑" style="width: 100%; height: 200px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513;">🏛️ 徽派建筑</h3>
+						<p style="color: #666;">白墙黛瓦，马头墙，四水归堂，雕梁画栋。</p>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ========== 古桥名迹模块 ========== -->
+		<div id="bridge" class="section">
+			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🌉 古桥名迹</h2>
+			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+				<!-- 赵州桥卡片 -->
+				<div class="building-card" onclick="openModal('zhaozhou')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+					<img src="image/zzq.jpg" alt="赵州桥" style="width: 100%; height: 220px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513;">🌉 赵州桥（安济桥）</h3>
+						<p style="color: #666;">隋代李春设计建造，世界上现存最古老的石拱桥。</p>
+						<div style="margin-top: 15px; display: flex; gap: 10px;">
+							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">敞肩拱</span>
+							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">隋代</span>
+						</div>
+					</div>
+				</div>
+				<!-- 卢沟桥卡片 -->
+				<div class="building-card" onclick="openModal('luzhou')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+					<img src="image/lgq.jpg" alt="卢沟桥" style="width: 100%; height: 220px; object-fit: cover;">
+					<div style="padding: 20px;">
+						<h3 style="color: #8B4513;">🌉 卢沟桥</h3>
+						<p style="color: #666;">北京现存最古老的石造联拱桥，桥身石狮501个。</p>
+						<div style="margin-top: 15px; display: flex; gap: 10px;">
+							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">联拱石桥</span>
+							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">石狮501个</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ========== 营造技艺模块 ========== -->
+		<div id="structure" class="section">
+			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🔨 营造技艺</h2>
+			<div class="tech-box">
+				<div class="tech-layout">
+					<div class="struct-diagram" id="structDiagram">
+						<div class="struct-part part-roof" data-part="roof"></div>
+						<div class="struct-part part-wall" data-part="wall"></div>
+						<div class="struct-part part-base" data-part="base"></div>
+					</div>
+					<div class="tech-info" id="techInfo">
+						<div class="tech-card" data-part="roof">
+							<h4>🏛️ 屋顶</h4>
+							<p>四坡五脊的庑殿顶，最高等级屋顶形式。屋面曲线"反宇向阳"，既利于排水，又显飞动之美。</p>
+						</div>
+						<div class="tech-card" data-part="wall">
+							<h4>🚪 屋身</h4>
+							<p>立柱承重，墙体仅作围护。"墙倒屋不塌"是中国木构架建筑的精髓所在。</p>
+						</div>
+						<div class="tech-card" data-part="base">
+							<h4>🪨 台基</h4>
+							<p>石质基础，防潮稳固。台基越高，建筑等级越高。须弥座为最高级形式。</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+<div class="container" id="quiz"> <!-- 新增ID -->
+        <!-- 页面标题 - 匹配参考图的“建筑·华容道”样式 -->
+        <h1 id="pageTitle">❓ 知识问答</h1>
+        <p id="pageSubtitle">PUZZLE · 国风解谜</p>
+
+        <!-- 核心答题容器 -->
+        <div id="quizContainer">
+            <div class="quiz-question" id="question"></div>
+            <!-- 选项容器（新增ID） -->
+            <div class="quiz-options" id="optionsContainer"></div>
+            <!-- 结果面板（新增ID） -->
+            <div class="quiz-result" id="resultPanel" style="display: none;"></div>
+            <!-- 知识点面板容器 -->
+            <div id="knowledgePanel"></div>
+            <button id="nextBtn" style="display: none;">下一题</button>
+            <!-- 得分显示（新增ID） -->
+            <div id="scoreDisplay">
+                得分: <span id="scoreNum">0</span> / <span id="totalNum">5</span>
+            </div>
+        </div>
+    </div>
+
+<!-- 建筑 · 华容道 -->
+<section id="3dmodel" class="scroll-section">
+  <div class="game-container">
+    <div class="game-title">
+      <h2>🏯 建筑 · 华容道</h2>
+      <p>PUZZLE · 国风解谜</p>
+    </div>
+
+    <div class="game-bar">
+      <div>步数：<span id="stepCount">0</span></div>
+      <div>时间：<span id="timeCount">00:00</span></div>
+      <button id="resetBtn">重新开始</button>
+    </div>
+
+    <div class="game-info">
+      <div class="info-title">📜 游戏说明</div>
+      1. 目标：按<br>
+      <strong>台基→柱→斗拱→梁→飞檐→墙→窗→屋顶→台基</strong><br>
+      顺序归位<br>
+      2. 操作：点击与空格相邻的方块移动<br>
+      3. 胜利：空格在右下角即为通关
+    </div>
+
+    <div id="puzzleBoard" class="puzzle-board"></div>
+  </div>
+</section>
+
+<div id="petals"></div>
+
+<!-- 花瓣容器 -->
+<div id="petals"></div>
+
+<!-- ========== 模型上色模块 ========== -->
+<div id="coloring-model" class="section">
+    <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🖌️ 古建模型上色</h2>
+    
+    <!-- 上色操作区 -->
+    <div style="display: grid; grid-template-columns: 1fr 300px; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+        <!-- 画布区域 -->
+        <div style="background: #f8f5f0; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <h3 style="color: #8B4513; margin-bottom: 10px;">🎨 古建筑填色</h3>
+                <p style="color: #666; font-size: 14px;">选中颜色后，在画布上为建筑部件上色</p>
+            </div>
+            <canvas id="coloringCanvas" width="800" height="600" style="border: 2px solid #8B4513; border-radius: 8px; background: white; width: 100%; height: auto;"></canvas>
+            
+            <!-- 画布操作按钮 -->
+            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                <button id="clearCanvas" style="padding: 8px 24px; background: #8B1A1A; color: white; border: 2px solid #D4AF37; border-radius: 20px; cursor: pointer;">清空画布</button>
+                <button id="saveDrawing" style="padding: 8px 24px; background: #D4AF37; color: #8B1A1A; border: 2px solid #8B1A1A; border-radius: 20px; cursor: pointer;">保存作品</button>
+                <button id="resetDrawing" style="padding: 8px 24px; background: #f8f5f0; color: #8B1A1A; border: 2px solid #8B1A1A; border-radius: 20px; cursor: pointer;">重置线稿</button>
+			</div>
+        </div>
+       
+        <!-- 颜色选择区 -->
+        <div style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <h3 style="color: #8B4513; margin-bottom: 20px; text-align: center;">🎨 颜色面板</h3>
+            
+            <!-- 主色调选择 -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="color: #666; font-size: 14px; margin-bottom: 10px;">基础色</h4>
+                <div class="color-palette" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                    <div class="color-option" data-color="#8B1A1A" style="width: 40px; height: 40px; background: #8B1A1A; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#D4AF37" style="width: 40px; height: 40px; background: #D4AF37; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#8B4513" style="width: 40px; height: 40px; background: #8B4513; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#FFD6E6" style="width: 40px; height: 40px; background: #FFD6E6; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#FFFFFF" style="width: 40px; height: 40px; background: #FFFFFF; border-radius: 50%; cursor: pointer; border: 2px solid #ccc;"></div>
+                    <div class="color-option" data-color="#000000" style="width: 40px; height: 40px; background: #000000; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#2E8B57" style="width: 40px; height: 40px; background: #2E8B57; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#4169E1" style="width: 40px; height: 40px; background: #4169E1; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                </div>
+            </div>
+            
+            <!-- 建筑部件快速上色 -->
+            <div style="margin-bottom: 30px;">
+                <h4 style="color: #666; font-size: 14px; margin-bottom: 10px;">快速上色（按部件）</h4>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="part-color-btn" data-part="roof" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
+                        <span style="display: inline-block; width: 15px; height: 15px; background: #8B1A1A; margin-right: 10px;"></span>屋顶（朱红）
+                    </button>
+                    <button class="part-color-btn" data-part="wall" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
+                        <span style="display: inline-block; width: 15px; height: 15px; background: #FFFFFF; margin-right: 10px; border: 1px solid #ccc;"></span>墙面（白色）
+                    </button>
+                    <button class="part-color-btn" data-part="pillar" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
+                        <span style="display: inline-block; width: 15px; height: 15px; background: #D4AF37; margin-right: 10px;"></span>立柱（金黄）
+                    </button>
+                    <button class="part-color-btn" data-part="base" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
+                        <span style="display: inline-block; width: 15px; height: 15px; background: #8B4513; margin-right: 10px;"></span>台基（褐色）
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 画笔大小调节 -->
+            <div>
+                <h4 style="color: #666; font-size: 14px; margin-bottom: 10px;">画笔大小</h4>
+                <input type="range" id="brushSize" min="1" max="20" value="5" style="width: 100%;">
+                <div style="display: flex; justify-content: space-between; color: #666; font-size: 12px;">
+                    <span>细</span>
+                    <span id="brushSizeValue">5px</span>
+                    <span>粗</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 作品展示区 -->
+	<div style="max-width: 1390px; margin: 40px auto 0; padding: 0 20px;">
+		<h3 style="color: #8B4513; margin-bottom: 20px; text-align: center; font-size: 1.5em;">🎨 优秀填色作品欣赏</h3>
+		
+		<!-- 轮播图容器 -->
+		<div style="position: relative; border-radius: 16px; overflow: hidden; background: #f8f5f0; padding: 20px 0;">
+			
+			<!-- 主轮播区域 -->
+			<div style="position: relative; overflow: hidden;">
+				<div id="carousel-track" style="display: flex; transition: transform 0.5s ease-in-out; gap: 20px;">
+					<!-- 图片将动态生成 -->
+				</div>
+				
+				<!-- 左右导航按钮 -->
+				<button id="TprevBtn" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: rgba(139, 69, 19, 0.8); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: bold; transition: all 0.3s; z-index: 10; display: flex; align-items: center; justify-content: center;">&lt;</button>
+
+				<button id="TnextBtn" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); 
+background: rgba(139, 69, 19, 0.8); color: white; 
+border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 20px; font-weight: bold; transition: all 0.3s; z-index: 10; display: flex; align-items: center; justify-content: center;">&gt;</button>
+			</div>
+			
+			<!-- 指示点 -->
+			<div id="carousel-dots" style="display: flex; justify-content: center; gap: 12px; margin-top: 20px;"></div>
+		</div>
+	</div>
+
+	<script>
+		// 图片列表（image文件夹下，pic1.png ~ pic8.png）
+		const originalImages = [
+			'image/pic1.png',
+			'image/pic2.png',
+			'image/pic3.png',
+			'image/pic4.png',
+			'image/pic5.png',
+			'image/pic6.png',
+			'image/pic7.png',
+			'image/pic8.png',
+			'image/pic9.png'
+		];
+
+		// 为了实现无缝循环，将图片列表复制3份
+		let images = [...originalImages, ...originalImages, ...originalImages];
+		let originalCount = originalImages.length;
+
+		// 配置
+		let itemsPerView = 3;
+		let itemWidth = 0;
+		let currentIndex = originalCount; // 从中间开始，方便前后滚动
+		let autoPlayInterval;
+
+		const track = document.getElementById('carousel-track');
+		const dotsContainer = document.getElementById('carousel-dots');
+		const TprevBtn = document.getElementById('TprevBtn');
+		const TnextBtn = document.getElementById('TnextBtn');
+
+		// 计算每页显示数量（响应式）
+		function updateItemsPerView() {
+			const width = window.innerWidth;
+			if (width < 640) {
+				itemsPerView = 1;
+			} else if (width < 1024) {
+				itemsPerView = 2;
+			} else {
+				itemsPerView = 3;
+			}
+			return itemsPerView;
+		}
+
+		// 计算单张图片宽度（保持竖版比例，高度自适应）
+		function updateItemWidth() {
+			const container = track.parentElement;
+			const containerWidth = container.clientWidth - 40;
+			const totalGap = (itemsPerView - 1) * 20;
+			itemWidth = (containerWidth - totalGap) / itemsPerView;
+			return itemWidth;
+		}
+
+		// 构建轮播图
+		function buildCarousel() {
+			track.innerHTML = '';
+			dotsContainer.innerHTML = '';
+			
+			// 构建所有图片（使用复制的图片列表实现无缝循环）
+			images.forEach((img, index) => {
+				const slide = document.createElement('div');
+				slide.style.minWidth = `${itemWidth}px`;
+				slide.style.width = `${itemWidth}px`;
+				slide.style.flexShrink = '0';
+				slide.innerHTML = `
+					<div style="border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1); background: #fff;">
+						<img src="${img}" alt="作品" 
+							style="width: 100%; height: auto; display: block;"
+							onerror="this.src='https://picsum.photos/id/104/400/500'; this.onerror=null;">
+					</div>
+				`;
+				track.appendChild(slide);
+			});
+			
+			// 构建指示点（只针对原始图片数量）
+			const pageCount = Math.ceil(originalCount / itemsPerView);
+			for (let i = 0; i < pageCount; i++) {
+				const dot = document.createElement('div');
+				dot.style.width = '30px';
+				dot.style.height = '4px';
+				dot.style.borderRadius = '2px';
+				dot.style.backgroundColor = '#e0d6c0';
+				dot.style.cursor = 'pointer';
+				dot.style.transition = 'all 0.3s';
+				dot.addEventListener('click', () => goToPage(i));
+				dotsContainer.appendChild(dot);
+			}
+			
+			// 初始位置：定位到中间复制组的开始
+			currentIndex = originalCount;
+			updatePosition(false);
+		}
+
+		// 更新位置
+		function updatePosition(animate = true) {
+			// 计算滚动距离
+			let scrollDistance = 0;
+			for (let i = 0; i < currentIndex; i++) {
+				scrollDistance += itemWidth + 20;
+			}
+			
+			if (animate) {
+				track.style.transition = 'transform 0.5s ease-in-out';
+			} else {
+				track.style.transition = 'none';
+			}
+			track.style.transform = `translateX(-${scrollDistance}px)`;
+			
+			// 更新指示点
+			updateDots();
+		}
+
+		// 更新指示点
+		function updateDots() {
+			const pageCount = Math.ceil(originalCount / itemsPerView);
+			// 计算当前在原始图片中的位置
+			let rawIndex = currentIndex % originalCount;
+			let currentPage = Math.floor(rawIndex / itemsPerView);
+			
+			const dots = dotsContainer.children;
+			for (let i = 0; i < dots.length; i++) {
+				dots[i].style.backgroundColor = i === currentPage ? '#D4AF37' : '#e0d6c0';
+				dots[i].style.width = i === currentPage ? '40px' : '30px';
+			}
+		}
+
+		// 跳转到指定页
+		function goToPage(page) {
+			const newRawIndex = page * itemsPerView;
+			// 计算目标位置（保持在中间复制组）
+			const targetIndex = (Math.floor(currentIndex / originalCount) * originalCount) + newRawIndex;
+			currentIndex = targetIndex;
+			updatePosition(true);
+			
+			// 动画结束后检查边界
+			setTimeout(checkBoundary, 500);
+		}
+
+		// 检查边界，实现无缝循环
+		function checkBoundary() {
+			const totalImages = images.length;
+			const threshold = originalCount;
+			
+			if (currentIndex >= totalImages - threshold) {
+				// 太靠右，跳回中间
+				track.style.transition = 'none';
+				currentIndex = threshold + (currentIndex % originalCount);
+				let scrollDistance = 0;
+				for (let i = 0; i < currentIndex; i++) {
+					scrollDistance += itemWidth + 20;
+				}
+				track.style.transform = `translateX(-${scrollDistance}px)`;
+				setTimeout(() => {
+					track.style.transition = 'transform 0.5s ease-in-out';
+				}, 50);
+			} else if (currentIndex < threshold) {
+				// 太靠左，跳回中间
+				track.style.transition = 'none';
+				currentIndex = totalImages - threshold + (currentIndex % originalCount);
+				let scrollDistance = 0;
+				for (let i = 0; i < currentIndex; i++) {
+					scrollDistance += itemWidth + 20;
+				}
+				track.style.transform = `translateX(-${scrollDistance}px)`;
+				setTimeout(() => {
+					track.style.transition = 'transform 0.5s ease-in-out';
+				}, 50);
+			}
+		}
+
+		// 下一页
+		function nextPage() {
+			currentIndex += itemsPerView;
+			updatePosition(true);
+			setTimeout(checkBoundary, 500);
+		}
+
+		// 上一页
+		function prevPage() {
+			currentIndex -= itemsPerView;
+			updatePosition(true);
+			setTimeout(checkBoundary, 500);
+		}
+
+		// 自动播放
+		function startAutoPlay() {
+			if (autoPlayInterval) clearInterval(autoPlayInterval);
+			autoPlayInterval = setInterval(() => {
+				nextPage();
+			}, 4000);
+		}
+
+		function stopAutoPlay() {
+			if (autoPlayInterval) clearInterval(autoPlayInterval);
+		}
+
+		// 响应窗口大小变化
+		function handleResize() {
+			updateItemsPerView();
+			updateItemWidth();
+			
+			// 重新设置所有图片宽度
+			const slides = track.children;
+			for (let i = 0; i < slides.length; i++) {
+				slides[i].style.minWidth = `${itemWidth}px`;
+				slides[i].style.width = `${itemWidth}px`;
+			}
+			
+			// 重新计算滚动位置
+			let scrollDistance = 0;
+			for (let i = 0; i < currentIndex; i++) {
+				scrollDistance += itemWidth + 20;
+			}
+			track.style.transition = 'none';
+			track.style.transform = `translateX(-${scrollDistance}px)`;
+			setTimeout(() => {
+				track.style.transition = 'transform 0.5s ease-in-out';
+			}, 50);
+			
+			updateDots();
+		}
+
+		// 绑定事件
+		TprevBtn.addEventListener('click', () => {
+			prevPage();
+			stopAutoPlay();
+			startAutoPlay();
+		});
+		TnextBtn.addEventListener('click', () => {
+			nextPage();
+			stopAutoPlay();
+			startAutoPlay();
+		});
+
+		// 鼠标悬停暂停自动播放
+		const carouselContainer = document.querySelector('#carousel-track').parentElement.parentElement;
+		carouselContainer.addEventListener('mouseenter', stopAutoPlay);
+		carouselContainer.addEventListener('mouseleave', startAutoPlay);
+
+		// 窗口大小变化时重新计算
+		window.addEventListener('resize', () => {
+			setTimeout(handleResize, 100);
+		});
+
+		// 初始化
+		updateItemsPerView();
+		updateItemWidth();
+		buildCarousel();
+		startAutoPlay();
+		</script>
+
+		<style>
+		/* 轮播图按钮悬停效果 */
+		#TprevBtn:hover, #TnextBtn:hover {
+			background: rgba(139, 69, 19, 0.9);
+			transform: translateY(-50%) scale(1.05);
+		}
+
+		/* 图片容器自适应高度 */
+		#carousel-track > div > div {
+			height: auto;
+		}
+	</style>
+
+
+
+</div>
+
+		<!-- ========== 历史长河模块 OK ========== -->
+		<div id="timeline" class="section">
+			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red);							text-align: center; margin-bottom: 30px;">📜 历史长河</h2>
+			<div class="timeline-river" id="timelineRiver">
+				<!-- 时间轴内容由JS动态生成 -->
+			</div>
+		</div>
+		<!-- ========== 互动留言板块 OK========== -->
+		<div id="comment-section" class="section">
+			<h2 class="font-calligraphy" style="font-size: 2.5em; 
+				color: var(--primary-red); text-align: center; 
+				margin-bottom: 15px;">💬 互动留言</h2>			
+			<p style="text-align: center; color: #8B5A2B;
+				margin-bottom: 30px; font-style: italic;">分享您对中国古建筑的见解与感受</p>
+			
+			<!-- 未登录时显示 -->
+			<div id="login-prompt" style="text-align: center; 
+				padding: 50px 30px; background: #fffaf0; 
+				border-radius: 16px; border: 1px solid #e8d8c8;">
+				<div style="font-size: 48px; margin-bottom: 15px;">📝</div>
+				<p style="margin-bottom: 20px; font-size: 18px; 
+					color: #8B5A2B;">登录后即可发表留言，分享您的见解</p>
+				<button onclick="showLoginModal()" style="padding: 12px 32px; 
+					background: #8B1A1A; color: white; 
+					border: 2px solid #D4AF37; border-radius: 40px; 
+					cursor: pointer; font-size: 16px; 
+					transition: all 0.3s;">登录 / 注册
+				</button>
+			</div>
+			
+			<!-- 已登录时显示（默认隐藏） -->
+			<div id="comment-form" style="display: none;">
+				<div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px; padding: 15px 20px; background: #fffaf0; border-radius: 60px; border: 1px solid #e8d8c8;">
+					<img id="user-avatar" src="https://img.icons8.com/color/48/000000/user.png" style="width: 52px; height: 52px; border-radius: 50%; border: 2px solid #D4AF37;">
+					<div>
+						<strong id="user-name" style="color: #8B1A1A; font-size: 18px;">用户</strong>
+						<p style="color: #B87C4E; font-size: 13px; margin-top: 4px;">欢迎分享您的观点</p>
+					</div>
+				</div>
+				<textarea id="comment-content" rows="4" style="width: 100%; padding: 16px; border: 2px solid #e8d8c8; border-radius: 16px; font-family: inherit; resize: vertical; background: #fffef8; font-size: 15px;" placeholder="写下您的留言..."></textarea>
+				<div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+					<button onclick="submitComment()" style="padding: 10px 32px; background: #8B1A1A; color: white; border: 2px solid #D4AF37; border-radius: 40px; cursor: pointer; font-size: 15px; transition: all 0.3s;">发布留言</button>
+				</div>
+			</div>
+			
+			<!-- 留言列表 -->
+			<div id="comment-list" style="margin-top: 40px;">
+				<h3 style="color: #8B1A1A; margin-bottom: 20px; font-size: 1.5em; border-left: 4px solid #D4AF37; padding-left: 15px;">📖 精彩留言</h3>
+				<div id="comments-container" style="max-height: 500px; overflow-y: auto;">
+					<p style="color: #B87C4E; text-align: center; padding: 40px;">暂无留言，快来抢沙发！</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 登录弹窗 -->
+		<div id="login-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; justify-content: center; align-items: center;">
+			<div style="background: #fffef8; padding: 35px; border-radius: 24px; width: 90%; max-width: 420px; border: 3px solid #D4AF37; box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+				<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+					<h3 style="color: #8B1A1A; font-size: 24px; margin: 0;">登录/注册</h3>
+					<button onclick="closeLoginModal()" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #8B5A2B;">&times;</button>
+				</div>
+				<input type="text" id="login-username" placeholder="用户名" style="width: 100%; padding: 14px; margin-bottom: 15px; border: 2px solid #e8d8c8; border-radius: 12px; font-size: 15px;">
+				<input type="password" id="login-password" placeholder="密码" style="width: 100%; padding: 14px; margin-bottom: 20px; border: 2px solid #e8d8c8; border-radius: 12px; font-size: 15px;">
+				<button onclick="doLogin()" style="width: 100%; padding: 14px; background: #8B1A1A; color: white; border: 2px solid #D4AF37; border-radius: 40px; cursor: pointer; font-size: 16px;">登录</button>
+				<p style="text-align: center; margin-top: 20px; color: #8B5A2B; font-size: 13px;">没有账号？直接输入用户名即可注册</p>
+			</div>
+		</div>
+	</div>
+
+	<!-- 页脚 -->
+	<footer style="background: var(--ink-black); color: white; padding: 60px 20px; text-align: center; margin-top: 100px;">
+		<h3 class="font-calligraphy" style="font-size: 2em; margin-bottom: 20px; color: var(--gold);">传承千年匠心</h3>
+		<p style="color: #999; max-width: 600px; margin: 0 auto; line-height: 1.8;">
+			中国古代建筑不仅是砖木瓦石的堆砌，更是中华文明智慧的结晶。<br>
+			从宫殿到民居，从桥梁到园林，每一座建筑都诉说着历史的沧桑与文化的厚重。
+		</p>
+		<div style="margin-top: 30px; color: #666;">
+			<p>© 2026 华夏营造 - 探索中国古代建筑之美</p>
+		</div>
+	</footer>
+    <!-- 左侧可拖动侧边栏 -->
+ <!--    <div class="sidebar-drag" id="sidebarDrag">
+        <div class="sidebar-header"><span>📜 内容划分</span><button id="toggleSidebar" class="toggle-btn">−</button></div>
+        <ul class="sidebar-menu" id="sidebarMenu">
+            <li><a href="#knowledge" class="sidebar-link">📚 知识区</a></li>
+            <li><a href="#qa" class="sidebar-link">❓ 互动区</a></li>
+            <li><a href="#manual" class="sidebar-link">🛠️ 游戏区</a></li>
+        </ul>
+    </div> -->
+
+
+    <!-- 加载画面 -->
+    <div class="loader" id="loader"><div class="loader-text">营造法式</div><div>正在加载古建筑精华...</div></div>
+
+    <!-- 水墨背景 -->
+    <div class="ink-bg"></div>
+
+    <!-- 飘落花瓣容器 -->
+    <div id="petals-container"></div>
+    <div class="smoke"></div>
+
+    <!-- 模态框 -->
+    <div class="modal" id="detailModal">
+		<div class="modal-content">
+			<span class="close-modal" onclick="closeModal()">×</span>
+			<div id="modalBody"></div>
+		</div>
+	</div>
+    <div class="modal" id="partModal">
+		<div class="modal-content">
+			<span class="modal-close" onclick="closePartModal()">&times;</span>
+			<h3>3D古建模型部件介绍</h3>
+			<div id="partModalBody"></div>
+		</div>
+	</div>
+
+	<!-- 古风音乐播放器（悬浮展开版） -->
+	<div class="music-player" id="musicPlayer">
+		<!-- 圆形图标（默认显示） -->
+		<div class="music-icon" id="musicIcon">
+			<div class="icon-inner">🎵</div>
+		</div>
+		
+		<!-- 完整播放器面板（悬停时显示） -->
+		<div class="player-panel" id="playerPanel">
+			<div class="player-container">
+				<!-- 音乐封面 -->
+				<div class="music-cover">
+					<img src="https://img.icons8.com/fluency/96/000000/music.png" alt="音乐封面" class="cover-img">
+					<button class="play-btn" id="playBtn">
+						<span class="play-icon">▶</span>
+						<span class="pause-icon" style="display: none;">❚❚</span>
+					</button>
+				</div>
+				
+				<!-- 歌曲信息 -->
+				<div class="music-info">
+					<div class="music-name" id="musicName">高山流水</div>
+					<div class="music-status" id="musicStatus">🎵 古风雅韵</div>
+				</div>
+				
+				<!-- 控制按钮组 -->
+				<div class="music-controls">
+					<button class="control-btn" id="musicPrevBtn" title="上一首">⏮</button>
+					<button class="control-btn" id="musicNextBtn" title="下一首">⏭</button>
+				</div>
+				
+				<!-- 本地音乐上传区 -->
+				<div class="music-upload">
+					<label for="musicFile" class="upload-label">
+						📁 本地
+					</label>
+					<input type="file" id="musicFile" accept="audio/*" class="upload-input">
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 返回顶部按钮 -->
+	<button id="backToTop" class="back-to-top" title="返回顶部">
+		<span class="arrow">↑</span>
+		<span class="text">顶部</span>
+	</button>
+
+		<script>
+	// 检查登录状态，更新导航栏按钮
+	function updateNavButtons() {
+		const currentUser = localStorage.getItem('currentUser');
+		const loginBtn = document.getElementById('loginBtn');
+		const registerBtn = document.getElementById('registerBtn');
+		const userDisplay = document.getElementById('userDisplay');
+		const logoutBtn = document.getElementById('logoutBtn');
+		
+		if (currentUser) {
+			// 已登录：隐藏登录/注册按钮，显示用户名和退出按钮
+			if (loginBtn) loginBtn.style.display = 'none';
+			if (registerBtn) registerBtn.style.display = 'none';
+			if (userDisplay) {
+				userDisplay.style.display = 'inline';
+				userDisplay.textContent = `👤 ${currentUser}`;
+			}
+			if (logoutBtn) logoutBtn.style.display = 'inline-block';
+		} else {
+			// 未登录：显示登录/注册按钮
+			if (loginBtn) loginBtn.style.display = 'inline-block';
+			if (registerBtn) registerBtn.style.display = 'inline-block';
+			if (userDisplay) userDisplay.style.display = 'none';
+			if (logoutBtn) logoutBtn.style.display = 'none';
+		}
+	}
+
+	// 退出登录
+	function logout() {
+		if (confirm('确定要退出登录吗？')) {
+			localStorage.removeItem('currentUser');
+			updateNavButtons();
+			// 刷新页面更新留言区状态
+			location.reload();
+		}
+	}
+
+	// 页面加载时更新按钮
+	document.addEventListener('DOMContentLoaded', function() {
+		updateNavButtons();
+		const logoutBtn = document.getElementById('logoutBtn');
+		if (logoutBtn) {
+			logoutBtn.onclick = logout;
+		}
+	});
+</script>
+    <!-- 脚本文件 -->
+    <script src="js/main.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/timeline.js"></script>
+    <script src="js/structure.js"></script>
+    <script src="js/music.js"></script>
+	<script src="js/comment.js"></script>
+	<script src="js/color.js"></script>	
+    <script type="module" src="js/game.js"></script>
+	<link rel="stylesheet" href="style.css">
+	<script src="game.js" defer></script>
+</body>
+</html>
