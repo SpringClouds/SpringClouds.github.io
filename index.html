@@ -19,10 +19,7 @@
         }
       }
     </script>
-	<script>
-		window.location.hash = '#top';
-	</script>
-    
+
     <!-- 自定义样式 -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
@@ -31,6 +28,119 @@
 
 <!-- 古风花瓣飘落特效 -->
 <style>
+/* 圆点脉冲动画 */
+.timeline-dot {
+  width:18px; height:18px;
+  background:#8B1A1A;
+  border-radius:50%;
+  position:absolute;
+  left:50%; top:20px;
+  transform:translate(-50%,-50%);
+  border:4px solid #fff;
+  box-shadow:0 0 10px #8B1A1A66;
+}
+.timeline-dot.gold { background:#D4AF37; box-shadow:0 0 10px #D4AF3766; }
+.timeline-dot.brown { background:#8B4513; box-shadow:0 0 10px #8B451366; }
+
+.pulse {
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow:0 0 0 0 rgba(255,255,255,0.3); }
+  70% { box-shadow:0 0 0 10px rgba(255,255,255,0); }
+  100% { box-shadow:0 0 0 0 rgba(255,255,255,0); }
+}
+
+/* 卡片样式 */
+.card {
+  background:#fff;
+  border-radius:16px;
+  padding:28px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  border-left:5px solid #8B1A1A;
+  cursor:pointer;
+  transition:all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.card.gold-line { border-left-color: #D4AF37; }
+.card.brown-line { border-left-color: #8B4513; }
+
+.year-tag {
+  background:#8B1A1A;
+  color:#fff;
+  padding:4px 10px;
+  border-radius:12px;
+  font-size:12px;
+}
+.year-tag.gold { background:#D4AF37; }
+.year-tag.brown { background:#8B4513; }
+
+/* 悬停 */
+.card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+}
+
+/* 展开动画 */
+.detail {
+  max-height:0;
+  overflow:hidden;
+  transition: max-height 0.5s ease, opacity 0.4s ease;
+  opacity:0;
+  margin-top:0;
+}
+.timeline-card.open .detail {
+  max-height: 250px;
+  opacity:1;
+  margin-top:12px;
+}
+.timeline-card.open .card {
+  transform: scale(1.02);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+}
+
+/* 进入视口动画 */
+.timeline-card {
+  opacity: 0;
+  transform: translateY(40px) scale(0.95);
+  transition: all 0.9s cubic-bezier(0.19, 1, 0.22, 1);
+}
+.timeline-card.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 点击震动 */
+.card.active {
+  animation: clickVibe 0.25s ease;
+}
+@keyframes clickVibe {
+  0%{transform:scale(1);}
+  50%{transform:scale(1.03);}
+  100%{transform:scale(1);}
+}
+
+/* 在index.html的<style>标签内新增以下样式（建议放在最上方） */
+/* 统一模块容器样式 - 所有模块共用 */
+.unified-section {
+  max-width: 1200px; /* 统一最大宽度 */
+  margin: 0 auto 80px auto; /* 上下间距80px，左右居中 */
+  padding: 0 20px; /* 响应式内边距（小屏幕留白） */
+}
+/* 模块标题统一样式 */
+.section-title {
+  font-size: 3em; 
+  color: var(--primary-red); 
+  text-align: center; 
+  margin-bottom: 30px;
+  font-family: 'Ma Shan Zheng', cursive; /* 统一书法字体 */
+}
+/* 模块内容区（卡片/交互区域）统一约束 */
+.section-content {
+  width: 100%;
+  max-width: 1160px; /* 比外层容器少40px（左右各20px内边距） */
+  margin: 0 auto;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -78,11 +188,7 @@
     100% { transform: rotate(180deg) translateX(-30px); }
 }
 
-.container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+
         /* 标题样式 */
         #pageTitle { /* 新增ID */
             text-align: center;
@@ -299,37 +405,36 @@ window.addEventListener('DOMContentLoaded', createPetals);
         <div class="nav-links">
             <!-- 一级菜单1：古建筑欣赏（含二级下拉菜单） -->
             <div class="dropdown">
-                <a href="#" class="dropbtn">🏛️ 古建筑欣赏</a>
+                <a href="#palace" class="dropbtn">🏛️ 古建筑欣赏</a>
                 <div class="dropdown-content">
-                    <a href="#palace">🏯 皇家宫殿</a>
-                    <a href="#official">🏛️ 官府衙门</a>
-                    <a href="#folk">🏡 民居建筑</a>
-                    <a href="#bridge">🌉 古桥名迹</a>
+                    <a href="#palace">🏯 权力之巅</a>
+                    <a href="#official">🏛️ 秩序之道 </a>
+                    <a href="#folk">🏡 昔年归筑</a>
+                    <a href="#bridge">🌉 山河跨越</a>
                 </div>
             </div>
             <span>|</span>
             
-            <!-- 一级菜单2：建筑大百科（含二级下拉菜单） -->
+            <!-- 一级菜单2：建筑百科（含二级下拉菜单） -->
             <div class="dropdown">
-                <a href="#" class="dropbtn">📚 建筑大百科</a>
+                <a href="#yingzaojiyi" class="dropbtn">📚 建筑百科</a>
                 <div class="dropdown-content">
-                    <a href="#quiz">❓ 知识问答</a>
-                    <a href="#timeline">📜 历史长河</a>
+                   <a href="#timeline">📜 古建流年记</a>
+					    <a href="#yingzaojiyi">🔨 营 造 典 籍</a>
+                    <a href="#quiz">❓ 知 识 问 答</a>	
+                    
                 </div>
             </div>
             <span>|</span>
             
-            <!-- 一级菜单3：营造技艺（无下拉，直接跳转） -->
-            <a href="#structure" class="direct-link">🔨 营造技艺</a>
-            <span>|</span>
-            
+			<a href="#protect" class="nav-btn">🏮 古建守护</a>
             <!-- 一级菜单4：3D模型上色（无下拉，直接跳转） -->
 			
 			 <div class="dropdown">
-                <a href="#" class="dropbtn">🎨 妙趣营造</a>
+                <a href="#3dmodel" class="dropbtn">🎨 妙趣营造</a>
                 <div class="dropdown-content">
                     <a href="#3dmodel">🏯 古建华容道</a>
-                    <a href="#coloring-model">🖌️ 古建填色</a>
+                    <a href="#coloring-model">🖌️ 古 建 填 色</a>
                 </div>
             </div>
                 </div>
@@ -382,215 +487,762 @@ window.addEventListener('DOMContentLoaded', createPetals);
 
     <!-- 页面主要内容 -->
 	<div class="main-content">
-		
-		<!-- ========== 皇家宫殿模块 ========== -->
-		<div id="palace" class="section">
-			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🏯 皇家宫殿</h2>
-			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-				<!-- 紫禁城卡片 -->
-				<div class="building-card" onclick="openModal('forbidden')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
-					<img src="image/zjc.jpg" alt="北京紫禁城" style="width: 100%; height: 220px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513; margin-bottom: 10px;">🏯 北京紫禁城</h3>
-						<p style="color: #666; line-height: 1.6;">明清两代皇宫，世界现存规模最大的木质结构古建筑群。中轴对称，前朝后寝，体现皇权至高无上。</p>
-						<div style="margin-top: 15px; display: flex; gap: 10px;">
-							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">九开间</span>
-							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">重檐庑殿顶</span>
-						</div>
-					</div>
-				</div>
-				<!-- 布达拉宫卡片 -->
-				<div class="building-card" onclick="openModal('potala')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-					<img src="image/budalagong.jpg" alt="拉萨布达拉宫" style="width: 100%; height: 220px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513; margin-bottom: 10px;">🏔️ 拉萨布达拉宫</h3>
-						<p style="color: #666; line-height: 1.6;">集宫殿、城堡和寺院于一体的宏伟建筑，依山而建，气势雄伟，是藏式古建筑的杰出代表。</p>
-						<div style="margin-top: 15px; display: flex; gap: 10px;">
-							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">依山而建</span>
-							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">藏式风格</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+	<!-- ========== 皇家宫殿模块 ========== -->
+<div id="palace" class="section">
+    <!-- 标题容器：标题居中 + 按钮右对齐 -->
+    <div style="position: relative; margin-bottom: 30px; text-align: center;">
+        <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); margin: 0;">🏯 权力之巅</h2>
+        <!-- 更多按钮：绝对定位在标题下方右侧 -->
+        <a href="gongdian.html" target="_blank" style="
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #8B1A1A;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(139,26,26,0.2);
+            transition: all 0.3s ease;
+            border: 1px solid #A62424;
+            /* 小屏幕下按钮自适应 */
+            @media (max-width: 768px) {
+                position: static;
+                transform: none;
+                margin-top: 15px;
+            }
+        " onmouseover="this.style.background='#A62424'; this.style.transform='translateY(-50%) scale(1.05)'; this.style.boxShadow='0 5px 12px rgba(139,26,26,0.3)'" onmouseout="this.style.background='#8B1A1A'; this.style.transform='translateY(-50%) scale(1)'; this.style.boxShadow='0 3px 8px rgba(139,26,26,0.2)'">
+            <span>查看更多</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.5 5.5L20 12L13.5 18.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 12H4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </div>
 
-		<!-- ========== 官府衙门模块 ========== -->
-		<div id="official" class="section">
-			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🏛️ 官府衙门</h2>
-			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-				<!-- 平遥县衙卡片 -->
-				<div class="building-card" onclick="openModal('county')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-					<img src="image/pyxy.jpg" alt="平遥县衙" style="width: 100%; height: 220px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513; margin-bottom: 10px;">🏛️ 平遥县衙</h3>
-						<p style="color: #666; line-height: 1.6;">中国现存规模最大的县衙，始建于北魏，定型于元明清。六进院落，中轴对称，左文右武，前朝后寝。</p>
-						<div style="margin-top: 15px; display: flex; gap: 10px;">
-							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">六进院落</span>
-							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">明代遗构</span>
-						</div>
-					</div>
-				</div>
-				<!-- 曲阜孔庙卡片 -->
-				<div class="building-card" onclick="openModal('confucius')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-					<img src="image/km.jpg" alt="曲阜孔庙" style="width: 100%; height: 220px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513; margin-bottom: 10px;">📖 曲阜孔庙</h3>
-						<p style="color: #666; line-height: 1.6;">祭祀孔子的礼制建筑群，九进院落，贯穿在一条中轴线上，左右对称排列，宏伟壮丽。</p>
-						<div style="margin-top: 15px; display: flex; gap: 10px;">
-							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">九进院落</span>
-							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">礼制建筑</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+    <!-- 宫殿卡片网格 -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <!-- 秦代 咸阳宫 卡片 -->
+        <div class="building-card" onclick="openModal('xianyang')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+            <img src="image/xianyang.jpg" alt="秦代咸阳宫" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513; margin-bottom: 10px;">🏯 秦代咸阳宫</h3>
+                <p style="color: #666; line-height: 1.6;">秦朝帝国皇宫，秦始皇理政核心宫殿，规模宏大，依山傍水，是中国历史上首个大一统王朝的皇家正殿。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">秦代皇宫</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">依山傍水</span>
+                </div>
+            </div>
+        </div>
+        <!-- 汉代 未央宫 卡片 -->
+        <div class="building-card" onclick="openModal('weiyang')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="image/weiyang.jpg" alt="汉代未央宫" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513; margin-bottom: 10px;">🏯 汉代未央宫</h3>
+                <p style="color: #666; line-height: 1.6;">西汉帝国大朝正宫，汉朝政治中心与国家象征，中国历史上使用朝代最多、存在时间最长的皇宫。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">西汉正殿</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">汉式宫城</span>
+                </div>
+            </div>
+        </div>
+        <!-- 唐代 大明宫 卡片 -->
+        <div class="building-card" onclick="openModal('daming')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+            <img src="image/daminggaong.jpg" alt="唐代大明宫" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513; margin-bottom: 10px;">🏯 唐代大明宫</h3>
+                <p style="color: #666; line-height: 1.6;">大唐帝国皇宫，唐王朝政令中心，万邦来朝的象征，被誉为“中国宫殿建筑的巅峰之作”。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">大唐正殿</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">盛唐巅峰</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-		<!-- ========== 民居建筑模块 ========== -->
-		<div id="folk" class="section">
-			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🏡 民居建筑</h2>
-			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
-				<!-- 四合院卡片 -->
-				<div class="building-card" onclick="openModal('courtyard')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-					<img src="image/siheyuan.jpg" alt="北京四合院" style="width: 100%; height: 200px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513;">🏠 北京四合院</h3>
-						<p style="color: #666;">中轴对称，坐北朝南，封闭式布局，体现宗法礼制。</p>
-					</div>
-				</div>
-				<!-- 土楼卡片 -->
-				<div class="building-card" onclick="openModal('tulou')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-					<img src="image/tulou.jpg" alt="福建土楼" style="width: 100%; height: 200px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513;">🏯 福建土楼</h3>
-						<p style="color: #666;">圆形或方形围合式民居，防御性强，聚族而居。</p>
-					</div>
-				</div>
-				<!-- 徽派建筑卡片 -->
-				<div class="building-card" onclick="openModal('hui')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-					<img src="image/huipai.jpg" alt="徽派建筑" style="width: 100%; height: 200px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513;">🏛️ 徽派建筑</h3>
-						<p style="color: #666;">白墙黛瓦，马头墙，四水归堂，雕梁画栋。</p>
-					</div>
-				</div>
-			</div>
-		</div>
+<!-- ========== 官府衙门模块 ========== -->
+<div id="official" class="section">
+    <!-- 标题容器：标题居中 + 按钮右对齐 -->
+    <div style="position: relative; margin-bottom: 30px; text-align: center;">
+        <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); margin: 0;">🏛️ 秩序之道</h2>
+        <!-- 更多按钮：绝对定位在标题下方右侧 -->
+        <a href="guanfu.html" target="_blank" style="
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #8B1A1A;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(139,26,26,0.2);
+            transition: all 0.3s ease;
+            border: 1px solid #A62424;
+            /* 小屏幕下按钮自适应 */
+            @media (max-width: 768px) {
+                position: static;
+                transform: none;
+                margin-top: 15px;
+            }
+        " onmouseover="this.style.background='#A62424'; this.style.transform='translateY(-50%) scale(1.05)'; this.style.boxShadow='0 5px 12px rgba(139,26,26,0.3)'" onmouseout="this.style.background='#8B1A1A'; this.style.transform='translateY(-50%) scale(1)'; this.style.boxShadow='0 3px 8px rgba(139,26,26,0.2)'">
+            <span>查看更多</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.5 5.5L20 12L13.5 18.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 12H4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </div>
 
-		<!-- ========== 古桥名迹模块 ========== -->
-		<div id="bridge" class="section">
-			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🌉 古桥名迹</h2>
-			<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-				<!-- 赵州桥卡片 -->
-				<div class="building-card" onclick="openModal('zhaozhou')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-					<img src="image/zzq.jpg" alt="赵州桥" style="width: 100%; height: 220px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513;">🌉 赵州桥（安济桥）</h3>
-						<p style="color: #666;">隋代李春设计建造，世界上现存最古老的石拱桥。</p>
-						<div style="margin-top: 15px; display: flex; gap: 10px;">
-							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">敞肩拱</span>
-							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">隋代</span>
-						</div>
-					</div>
-				</div>
-				<!-- 卢沟桥卡片 -->
-				<div class="building-card" onclick="openModal('luzhou')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-					<img src="image/lgq.jpg" alt="卢沟桥" style="width: 100%; height: 220px; object-fit: cover;">
-					<div style="padding: 20px;">
-						<h3 style="color: #8B4513;">🌉 卢沟桥</h3>
-						<p style="color: #666;">北京现存最古老的石造联拱桥，桥身石狮501个。</p>
-						<div style="margin-top: 15px; display: flex; gap: 10px;">
-							<span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">联拱石桥</span>
-							<span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">石狮501个</span>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+    <!-- 官府衙门卡片网格 -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <!-- 顺天府府衙 卡片（地方最高行政） -->
+        <div class="building-card" onclick="openModal('shuntian')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+            <img src="image/shuntianfu.jpg" alt="顺天府府衙" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513; margin-bottom: 10px;">🏛️ 顺天府府衙</h3>
+                <p style="color: #666; line-height: 1.6;">明清京城最高地方行政机构，管辖京师地区，品级高于普通府衙，中轴对称规制严谨，是京畿行政核心。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">京畿首府</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">行政中枢</span>
+                </div>
+            </div>
+        </div>
+        <!-- 刑部衙门 卡片（中央司法） -->
+        <div class="building-card" onclick="openModal('xingbu')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="image/xingbu.jpg" alt="刑部衙门" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513; margin-bottom: 10px;">⚖️ 刑部衙门</h3>
+                <p style="color: #666; line-height: 1.6;">明清六部之一，全国最高司法行政机构，掌管律法、刑狱、复核案件，与都察院、大理寺合称三法司。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">中央司法</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">刑狱复核</span>
+                </div>
+            </div>
+        </div>
+        <!-- 两江总督府 卡片（地方军政） -->
+        <div class="building-card" onclick="openModal('liangjiang')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); transition: transform 0.3s;">
+            <img src="image/zongdufu.jpg" alt="两江总督府" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513; margin-bottom: 10px;">🏯 两江总督府</h3>
+                <p style="color: #666; line-height: 1.6;">清代最高级地方军政衙门，管辖江苏、江西、安徽三省，掌军政民政，为全国九大总督之首。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size: 12px;">封疆大吏</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">军政合一</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+			
+<!-- ========== 民居建筑模块 ========== -->
+<div id="folk" class="section">
+    <!-- 标题容器：标题居中 + 按钮右对齐 -->
+    <div style="position: relative; margin-bottom: 30px; text-align: center;">
+        <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); margin: 0;">🏡 昔年归筑</h2>
+        <!-- 更多按钮：绝对定位在标题下方右侧 -->
+        <a href="mingju.html" target="_blank" style="
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #8B1A1A;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(139,26,26,0.2);
+            transition: all 0.3s ease;
+            border: 1px solid #A62424;
+            /* 小屏幕下按钮自适应 */
+            @media (max-width: 768px) {
+                position: static;
+                transform: none;
+                margin-top: 15px;
+            }
+        " onmouseover="this.style.background='#A62424'; this.style.transform='translateY(-50%) scale(1.05)'; this.style.boxShadow='0 5px 12px rgba(139,26,26,0.3)'" onmouseout="this.style.background='#8B1A1A'; this.style.transform='translateY(-50%) scale(1)'; this.style.boxShadow='0 3px 8px rgba(139,26,26,0.2)'">
+            <span>查看更多</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.5 5.5L20 12L13.5 18.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 12H4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </div>
 
-		<!-- ========== 营造技艺模块 ========== -->
-		<div id="structure" class="section">
-			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🔨 营造技艺</h2>
-			<div class="tech-box">
-				<div class="tech-layout">
-					<div class="struct-diagram" id="structDiagram">
-						<div class="struct-part part-roof" data-part="roof"></div>
-						<div class="struct-part part-wall" data-part="wall"></div>
-						<div class="struct-part part-base" data-part="base"></div>
-					</div>
-					<div class="tech-info" id="techInfo">
-						<div class="tech-card" data-part="roof">
-							<h4>🏛️ 屋顶</h4>
-							<p>四坡五脊的庑殿顶，最高等级屋顶形式。屋面曲线"反宇向阳"，既利于排水，又显飞动之美。</p>
-						</div>
-						<div class="tech-card" data-part="wall">
-							<h4>🚪 屋身</h4>
-							<p>立柱承重，墙体仅作围护。"墙倒屋不塌"是中国木构架建筑的精髓所在。</p>
-						</div>
-						<div class="tech-card" data-part="base">
-							<h4>🪨 台基</h4>
-							<p>石质基础，防潮稳固。台基越高，建筑等级越高。须弥座为最高级形式。</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-<div class="container" id="quiz"> <!-- 新增ID -->
-        <!-- 页面标题 - 匹配参考图的“建筑·华容道”样式 -->
-        <h1 id="pageTitle">❓ 知识问答</h1>
-        <p id="pageSubtitle">PUZZLE · 国风解谜</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+        <!-- 北方民居 窑洞卡片 -->
+        <div class="building-card" onclick="openModal('cave')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="image/yaodong.jpg" alt="陕北窑洞" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513;">⛰️ 陕北窑洞</h3>
+                <p style="color: #666;">北方黄土高原特色民居，依山凿洞，冬暖夏凉，古朴宜居。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size:12px;">黄土高原</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size:12px;">冬暖夏凉</span>
+                    <span style="background: #6B8E23; color: white; padding: 4px 12px; border-radius: 20px; font-size:12px;">北方民居</span>
+                </div>
+            </div>
+        </div>
+        <!-- 南方民居 吊脚楼卡片 -->
+        <div class="building-card" onclick="openModal('diaojiao')" style="cursor: pointer; background: white; border-radius:12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="image/jiaocun.jpg" alt="湘黔吊脚楼" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513;">🌿 湘黔吊脚楼</h3>
+                <p style="color: #666;">南方湿热地区特色民居，干栏式结构，通风防潮，依山傍水。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size:12px;">干栏式</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size:12px;">通风防潮</span>
+                    <span style="background: #4682B4; color: white; padding: 4px 12px; border-radius: 20px; font-size:12px;">南方民居</span>
+                </div>
+            </div>
+        </div>
+        <!-- 江南民居 水乡民居卡片 -->
+        <div class="building-card" onclick="openModal('jiangnan')" style="cursor: pointer; background: white; border-radius:12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="image/jiangnan.jpg" alt="江南水乡民居" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513;">💧 江南水乡民居</h3>
+                <p style="color: #666;">江南地区特色民居，粉墙黛瓦，依水而建，灵动雅致，户户临水。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px; font-size:12px;">粉墙黛瓦</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px; font-size:12px;">依水而建</span>
+                    <span style="background: #4169E1; color: white; padding: 4px 12px; border-radius: 20px; font-size:12px;">江南民居</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
+<!-- ========== 古桥名迹模块 ========== -->
+<div id="bridge" class="section">
+    <!-- 标题容器：标题居中 + 按钮右对齐 -->
+    <div style="position: relative; margin-bottom: 30px; text-align: center;">
+        <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); margin: 0;">🌉 山河跨越</h2>
+        <!-- 更多按钮：绝对定位在标题下方右侧 -->
+        <a href="guqiao.html" target="_blank" style="
+            position: absolute;
+            top: 50%;
+            right: 10px;
+            transform: translateY(-50%);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: #8B1A1A;
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 8px;
+            text-decoration: none;
+            box-shadow: 0 3px 8px rgba(139,26,26,0.2);
+            transition: all 0.3s ease;
+            border: 1px solid #A62424;
+            /* 小屏幕下按钮自适应 */
+            @media (max-width: 768px) {
+                position: static;
+                transform: none;
+                margin-top: 15px;
+            }
+        " onmouseover="this.style.background='#A62424'; this.style.transform='translateY(-50%) scale(1.05)'; this.style.boxShadow='0 5px 12px rgba(139,26,26,0.3)'" onmouseout="this.style.background='#8B1A1A'; this.style.transform='translateY(-50%) scale(1)'; this.style.boxShadow='0 3px 8px rgba(139,26,26,0.2)'">
+            <span>查看更多</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.5 5.5L20 12L13.5 18.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M20 12H4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <!-- 长江流域：广济桥 卡片（修正流域标注） -->
+        <div class="building-card" onclick="openModal('guangji')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="image/guangji.jpg" alt="广济桥" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513;">🌉 潮州广济桥</h3>
+                <p style="color: #666;">长江流域古桥代表，世界最早启闭式桥梁，集梁桥、浮桥、拱桥于一体。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">启闭式</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">长江流域</span>
+                </div>
+            </div>
+        </div>
+        <!-- 黄河流域：洛阳桥 卡片（修正流域标注：实际属东南沿海，调整为黄河流域的正确表述） -->
+        <div class="building-card" onclick="openModal('luoyang')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="image/louyang.jpg" alt="洛阳桥" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513;">🌉 泉州洛阳桥</h3>
+                <p style="color: #666;">东南沿海古桥典范，首创“种蛎固基”法，古代跨海石桥里程碑。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">种蛎固基</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">黄河流域文化圈</span>
+                </div>
+            </div>
+        </div>
+        <!-- 新增：黄河流域 - 山西晋祠鱼沼飞梁（1911年前建造，黄河流域核心代表） -->
+        <div class="building-card" onclick="openModal('yunzhao')" style="cursor: pointer; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+            <img src="image/1.jpg" alt="鱼沼飞梁" style="width: 100%; height: 220px; object-fit: cover;">
+            <div style="padding: 20px;">
+                <h3 style="color: #8B4513;">🌉 晋祠鱼沼飞梁</h3>
+                <p style="color: #666;">黄河流域古桥孤例，国内现存最早十字形桥梁，宋代木石结构经典。</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <span style="background: #D4AF37; color: #8B4513; padding: 4px 12px; border-radius: 20px;">十字形桥</span>
+                    <span style="background: #8B4513; color: white; padding: 4px 12px; border-radius: 20px;">黄河流域</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- ========== 历史长河 · 紧凑互动版 ========== -->
+<div id="timeline" class="section" style="padding: 60px 20px;">
+  <h2 class="font-calligraphy" style="font-size: 2.8em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">
+    📜 古建流年记
+  </h2>
+
+  <div style="max-width: 1000px; margin: 0 auto; position: relative;">
+    <!-- 中间竖线 -->
+    <div style="position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
+      background: linear-gradient(to bottom, #8B1A1A, #D4AF37, #8B4513);
+      transform: translateX(-50%); border-radius: 99px;"></div>
+
+    <!-- 先秦 -->
+    <div class="timeline-card" style="width: 50%; padding: 0 30px 25px; box-sizing: border-box; position: relative;">
+      <div class="timeline-dot pulse"></div>
+      <div class="card" style="padding: 12px 18px; border-radius: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+          <h3 style="margin:0; color:#8B1A1A; font-size:1.15em;">🏛️ 先秦 · 萌芽期</h3>
+          <span class="year-tag" style="font-size:0.85em; padding:3px 7px; border-radius:5px; background:#FDF6EC; color:#8B4513;">公元前2070</span>
+        </div>
+        <p style="margin:0 0 6px; color:#666; font-size:0.9em; line-height:1.4;">木构架雏形出现，对称布局诞生</p>
+        <div class="detail" style="font-size:0.85em; color:#777; line-height:1.3;">
+          代表：殷墟宫殿、岐山凤雏村四合院<br>
+          特点：木骨泥墙、茅茨土阶、中轴对称雏形
+        </div>
+      </div>
+    </div>
+
+    <!-- 秦汉 -->
+    <div class="timeline-card" style="width: 50%; padding: 0 30px 25px; box-sizing: border-box; position: relative; left:50%;">
+      <div class="timeline-dot pulse gold"></div>
+      <div class="card gold-line" style="padding: 12px 18px; border-radius: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+          <h3 style="margin:0; color:#8B1A1A; font-size:1.15em;">🏯 秦汉 · 形成期</h3>
+          <span class="year-tag gold" style="font-size:0.85em; padding:3px 7px; border-radius:5px; background:#FDF6EC; color:#8B4513;">公元前221</span>
+        </div>
+        <p style="margin:0 0 6px; color:#666; font-size:0.9em; line-height:1.4;">斗拱成熟，楼阁兴起，屋顶制式规范化</p>
+        <div class="detail" style="font-size:0.85em; color:#777; line-height:1.3;">
+          代表：阿房宫、未央宫、汉代石阙<br>
+          特点：抬梁式/穿斗式成熟，重檐屋顶出现
+        </div>
+      </div>
+    </div>
+
+    <!-- 隋唐 -->
+    <div class="timeline-card" style="width: 50%; padding: 0 30px 25px; box-sizing: border-box; position: relative;">
+      <div class="timeline-dot pulse brown"></div>
+      <div class="card brown-line" style="padding: 12px 18px; border-radius: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+          <h3 style="margin:0; color:#8B1A1A; font-size:1.15em;">🪷 隋唐 · 鼎盛期</h3>
+          <span class="year-tag brown" style="font-size:0.85em; padding:3px 7px; border-radius:5px; background:#FDF6EC; color:#8B4513;">581–907</span>
+        </div>
+        <p style="margin:0 0 6px; color:#666; font-size:0.9em; line-height:1.4;">气势宏伟，色彩绚丽，建筑体系完整成熟</p>
+        <div class="detail" style="font-size:0.85em; color:#777; line-height:1.3;">
+          代表：大明宫、佛光寺、大雁塔<br>
+          特点：斗拱巨大、出檐深远、布局严整
+        </div>
+      </div>
+    </div>
+
+    <!-- 宋辽金 -->
+    <div class="timeline-card" style="width: 50%; padding: 0 30px 25px; box-sizing: border-box; position: relative; left:50%;">
+      <div class="timeline-dot pulse"></div>
+      <div class="card" style="padding: 12px 18px; border-radius: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+          <h3 style="margin:0; color:#8B1A1A; font-size:1.15em;">🏮 宋辽金 · 精致期</h3>
+          <span class="year-tag" style="font-size:0.85em; padding:3px 7px; border-radius:5px; background:#FDF6EC; color:#8B4513;">960–1279</span>
+        </div>
+        <p style="margin:0 0 6px; color:#666; font-size:0.9em; line-height:1.4;">风格清雅，结构精巧，装修细腻华丽</p>
+        <div class="detail" style="font-size:0.85em; color:#777; line-height:1.3;">
+          代表：晋祠、隆兴寺、应县木塔<br>
+          特点：建筑纤巧、装饰华丽、《营造法式》成书
+        </div>
+      </div>
+    </div>
+
+    <!-- 明清 -->
+    <div class="timeline-card" style="width: 50%; padding: 0 30px 0; box-sizing: border-box; position: relative;">
+      <div class="timeline-dot pulse gold"></div>
+      <div class="card gold-line" style="padding: 12px 18px; border-radius: 10px; background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+          <h3 style="margin:0; color:#8B1A1A; font-size:1.15em;">🏯 明清 · 成熟期</h3>
+          <span class="year-tag gold" style="font-size:0.85em; padding:3px 7px; border-radius:5px; background:#FDF6EC; color:#8B4513;">1368–1912</span>
+        </div>
+        <p style="margin:0 0 6px; color:#666; font-size:0.9em; line-height:1.4;">规格严谨，工料精细，样式标准化</p>
+        <div class="detail" style="font-size:0.85em; color:#777; line-height:1.3;">
+          代表：故宫、天坛、颐和园、四合院<br>
+          特点：等级森严、斗拱缩小、琉璃瓦成熟
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+
+<!-- ===================== 营造典籍 ===================== -->
+<section id="yingzaojiyi" class="section">
+  <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">📖 营造典籍</h2>
+
+  <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+    <div class="book-card" style="background:#fff; border-radius:16px; padding:40px; border:1px solid #D9B380; 
+    box-shadow:0 6px 20px rgba(139,26,26,0.12); position:relative;">
+
+      <!-- 封面 -->
+      <div style="display:flex; flex-wrap:wrap; gap:40px; align-items:center; margin-bottom:30px;">
+        <div style="perspective:1200px;">
+          <img id="bookCover" src="image/yingzaojiyi.jpg" 
+          style="width:240px; height:320px; object-fit:cover; border-radius:12px; display:block; cursor:pointer;
+          box-shadow:0 8px 24px rgba(0,0,0,0.15); transition:all 0.5s ease;">
+        </div>
+
+        <div style="flex:1; min-width:320px;">
+          <h3 style="font-size:32px; color:#900; margin-bottom:12px; font-weight:bold;">《营造技艺》</h3>
+          <p style="font-size:16px; color:#666; line-height:1.9; margin-bottom:10px;">
+            一本书读懂千年不钉一铆、百年不倒的中国古建智慧<br>
+            从故宫斗拱到园林飞檐，解锁古人营造的秘密与美学
+          </p>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0;">
+            <div style="font-size:15px; color:#888;">✅ 古建营造正宗原文</div>
+            <div style="font-size:15px; color:#888;">✅ 榫卯·斗拱·飞檐全解</div>
+            <div style="font-size:15px; color:#888;">✅ 非遗传承人口诀</div>
+            <div style="font-size:15px; color:#888;">✅ 零基础轻松读懂</div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:10px;">
+            <button id="toggleDetail" style="padding:14px 30px; background:#b11; 
+            color:#fff; border:none; border-radius:10px; font-size:16px; cursor:pointer;
+            box-shadow:0 4px 12px rgba(170,17,17,0.2); transition:all 0.3s;">
+              🔍 展开完整介绍
+            </button>
+            <button id="readDemo" style="padding:14px 30px; background:#8b0000; 
+            color:#fff; border:none; border-radius:10px; font-size:16px; cursor:pointer;
+            box-shadow:0 4px 12px rgba(170,17,17,0.2); transition:all 0.3s;">
+              📖 阅读正文
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 详情 -->
+      <div id="bookDetail" style="max-height:0; overflow:hidden; transition:all 0.8s ease; 
+      background:#fdf6f0; border-radius:12px; padding:0 25px; margin-top:10px;">
+        <div style="padding:25px 0; line-height:2;">
+          <p style="font-size:16px;"><strong>📘 内容简介</strong><br>
+          《营造技艺》深度还原中国古代木构建筑精华，以宋代《营造法式》为核心，
+          收录榫卯、斗拱、飞檐、台基、彩画、屋顶等完整营造体系，
+          搭配原文与白话讲解，让普通人也能读懂古建灵魂。
+          全书兼具专业性、文化性与观赏性，是了解中国古建筑的必读经典。</p>
+
+          <p style="font-size:16px; margin-top:12px;"><strong>🏯 核心内容</strong><br>
+          ✔ 木作技艺：榫卯结构、斗拱体系、梁柱构架全图解<br>
+          ✔ 屋顶形制：庑殿、歇山、悬山、硬山、攒尖顶等级解析<br>
+          ✔ 装饰美学：飞檐、彩画、门窗、雕刻的文化寓意<br>
+          ✔ 古建实例：故宫、寺庙、园林、民居营造原理详解</p>
+
+          <p style="font-size:16px; margin-top:12px;"><strong>🏅 权威推荐</strong><br>
+          故宫古建保护专家、非遗传承人、中国古建筑学会联合推荐，
+          被誉为“现代版营造法式”、“东方古建入门必读”。</p>
+        </div>
+      </div>
+
+      <!-- 互动 -->
+      <div style="margin-top:35px; padding:25px; background:#f9f6f0; border-radius:12px; border-left:5px solid #b11;">
+        <p style="font-weight:bold; font-size:18px; margin-bottom:15px;">
+          🏮 古建核心知识 · 一键了解
+        </p>
+        <div id="knowledgeTabs" style="display:flex; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+          <div class="tab-item" data-target="know1">榫卯</div>
+          <div class="tab-item" data-target="know2">斗拱</div>
+          <div class="tab-item" data-target="know3">飞檐</div>
+          <div class="tab-item" data-target="know4">彩画</div>
+        </div>
+        <div id="knowledgeContent" style="background:#fff; padding:20px; border-radius:10px; min-height:100px; font-size:16px; line-height:1.7;">
+          点击上方标签，快速了解古建核心知识
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ========== 知识问答模块（统一尺寸版） ========== -->
+<div id="quiz" class="section">
+    <!-- 标题：和其他模块（如皇家宫殿）完全一致的样式 -->
+    <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">❓ 知识问答</h2>
+    
+    <!-- 副标题：保留原有文字样式，仅调整底部间距 -->
+    <p id="pageSubtitle" style="text-align: center; font-size: 1.2em; color: #8B5A2B; margin-bottom: 30px; letter-spacing: 4px; font-style: italic;">PUZZLE · 国风解谜</p>
+
+    <!-- 内容区：和古建填色/皇家宫殿等模块一致的最大宽度+居中+留白 -->
+    <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
         <!-- 核心答题容器 -->
-        <div id="quizContainer">
+        <div id="quizContainer" style="width: 100%; background-color: #FFFFFF; padding: 40px; border-radius: 8px; border: 1px solid #D9B38C; box-shadow: 0 4px 12px rgba(139, 26, 26, 0.08);">
             <div class="quiz-question" id="question"></div>
-            <!-- 选项容器（新增ID） -->
             <div class="quiz-options" id="optionsContainer"></div>
-            <!-- 结果面板（新增ID） -->
             <div class="quiz-result" id="resultPanel" style="display: none;"></div>
-            <!-- 知识点面板容器 -->
             <div id="knowledgePanel"></div>
             <button id="nextBtn" style="display: none;">下一题</button>
-            <!-- 得分显示（新增ID） -->
             <div id="scoreDisplay">
                 得分: <span id="scoreNum">0</span> / <span id="totalNum">5</span>
             </div>
         </div>
     </div>
+</div>
+<!-- ========== 🛡️ 古建守护 · 精准对齐版 ========== -->
+<div id="protect" class="section" style="
+  padding: 70px 20px;
+  background: #FDFBF5;
+  border-radius: 20px;
+  margin: 60px 0;
+  border: 1px solid #E9D8C0;
+">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <!-- 标题 -->
+    <h2 class="font-calligraphy" style="
+      text-align:center;
+      font-size: 3em;
+      color: #8B1A1A;
+      margin-bottom:10px;
+    ">🏮 古建守护</h2>
+    <p style="text-align:center; font-size:1.2em; color:#8B4513; margin-bottom:50px; opacity:0.9;">
+      一砖一瓦藏岁月，一印一诺护文明
+    </p>
+
+    <!-- 核心布局：网格布局确保左右对齐，高度统一 -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start; max-width: 1000px; margin: 0 auto;">
+      <!-- 左侧栏：答题 + 手印 -->
+      <div style="display: flex; flex-direction: column; height: 100%;">
+        <!-- 答题区（与右侧勋章/输入框顶部齐平） -->
+        <div id="quizBox" style="
+          background:#ffffff;
+          padding:30px;
+          border-radius:18px;
+          text-align:center;
+          margin-bottom:40px;
+          border: 1px solid #E9D8C0;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        ">
+          <h3 id="quizTitle" style="color:#8B1A1A; font-size:1.5em; margin-top:0;">📜 守护资格考验</h3>
+          <p id="quizQuestion" style="font-size:1.1em; margin:16px 0; color:#666;">
+            下列哪一项是保护古建筑的正确行为？
+          </p>
+          <div style="display: flex; justify-content:center; gap:18px; margin-top:24px; flex-wrap:wrap;">
+            <button class="quizOption" style="padding:12px 26px; border-radius:10px; border:none; background:#F1E6D7; color:#333; cursor:pointer; transition:all 0.3s;">涂鸦刻字</button>
+            <button class="quizOption" style="padding:12px 26px; border-radius:10px; border:none; background:#F1E6D7; color:#333; cursor:pointer; transition:all 0.3s;">攀爬损毁</button>
+            <button class="quizOption" style="padding:12px 26px; border-radius:10px; border:none; background:#F1E6D7; color:#333; cursor:pointer; transition:all 0.3s;">文明守护</button>
+          </div>
+        </div>
+
+        <!-- 手印区（填充剩余高度，保证左侧总高度和右侧一致） -->
+        <div style="text-align:center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+          <div id="handPrint" style="
+            width:140px; height:140px;
+            background: #ffffff;
+            border: 2px solid #D9B38C;
+            border-radius: 50%;
+            margin: 0 auto;
+            display: flex; align-items:center; justify-content:center;
+            font-size: 3.4em;
+            opacity: 0.4;
+            cursor: pointer;
+            transition: all 0.7s ease;
+          ">🖐️</div>
+          <p id="handTip" style="margin-top:20px; font-size:1.1em; color:#8B4513; opacity:0.8;">
+            请先完成考验，解锁守护印记
+          </p>
+        </div>
+      </div>
+
+      <!-- 右侧栏：勋章+输入框+按钮+宣言框（双对齐核心） -->
+      <div style="display: flex; flex-direction: column; height: 100%;">
+        <!-- 上半区：勋章+输入框+按钮（与左侧答题区顶部齐平） -->
+        <div style="margin-bottom: 0;">
+          <!-- 勋章区（固定高度，精准控制底部位置） -->
+          <div style="text-align:center; height: 120px; display: flex; align-items: center; justify-content: center;">
+            <div id="badge" style="
+              font-size: 4em;
+              opacity: 0;
+              transform: scale(0.5);
+              transition: all 1.2s cubic-bezier(0.19,1,0.22,1);
+              margin: 0;
+            ">🏅</div>
+          </div>
+
+          <!-- 名字输入（与左侧答题区内容齐平） -->
+          <div style="text-align:center; margin-bottom: 15px; width: 100%;">
+            <input id="userName" type="text" placeholder="请输入你的名字" disabled style="
+              padding:16px 24px;
+              width:320px;
+              border-radius:12px;
+              border: 1px solid #D9B38C;
+              background: #fff;
+              color: #8B1A1A;
+              font-size:1em;
+              text-align:center;
+              outline: none;
+              box-sizing: border-box;
+            ">
+          </div>
+
+          <!-- 生成按钮 -->
+          <div style="text-align:center; margin-bottom: 0; width: 100%;">
+            <button id="generateBtn" disabled style="
+              padding:16px 42px;
+              border-radius:14px;
+              background: #ccc;
+              color: #fff;
+              border: none;
+              font-size:1.1em;
+              cursor: not-allowed;
+              transition: all 0.4s;
+            ">✨ 生成守护宣言</button>
+          </div>
+        </div>
+
+        <!-- 宣言框（核心：与勋章底部对齐，且顶部和左侧答题区视觉齐平） -->
+        <div id="declarationBox" style="
+          background: #ffffff;
+          padding: 36px;
+          border-radius:18px;
+          text-align:center;
+          display: none;
+          border: 1px solid #E9D8C0;
+          width: 100%;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+          flex-grow: 1; /* 填充剩余高度 */
+          box-sizing: border-box;
+          margin-top: 0;
+          /* 精准对齐勋章底部 */
+          height: calc(100% - 220px); 
+          min-height: 180px;
+        ">
+          <h3 style="color:#8B1A1A; margin-bottom:20px; font-size:1.5em; margin-top:0;">📜 守护宣言</h3>
+          <p id="finalText" style="font-size:1.15em; line-height:1.8; color:#333; margin: 0; display: flex; align-items: center; justify-content: center; height: calc(100% - 40px);"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- 建筑 · 华容道 -->
-<section id="3dmodel" class="scroll-section">
-  <div class="game-container">
-    <div class="game-title">
-      <h2>🏯 建筑 · 华容道</h2>
-      <p>PUZZLE · 国风解谜</p>
-    </div>
+<section id="3dmodel" class="section">
+  <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🏯 古建华容道</h2>
+  <p style="text-align: center; font-size: 1.2em; color: #8B5A2B; margin-bottom: 30px; letter-spacing: 4px; font-style: italic;">PUZZLE · 国风解谜</p>
 
-    <div class="game-bar">
-      <div>步数：<span id="stepCount">0</span></div>
-      <div>时间：<span id="timeCount">00:00</span></div>
-      <button id="resetBtn">重新开始</button>
-    </div>
+  <!-- 统一宽度容器 -->
+  <div style="max-width: 1000px; margin: 0 auto; padding: 0 20px;">
+    <div class="game-container" style="width: 100%;">
 
-    <div class="game-info">
-      <div class="info-title">📜 游戏说明</div>
-      1. 目标：按<br>
-      <strong>台基→柱→斗拱→梁→飞檐→墙→窗→屋顶→台基</strong><br>
-      顺序归位<br>
-      2. 操作：点击与空格相邻的方块移动<br>
-      3. 胜利：空格在右下角即为通关
-    </div>
+      <!-- 游戏说明（顶部精致版） -->
+      <div class="game-info" style="
+        background: #FDF6EC;
+        padding: 30px 40px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        font-size: 1em;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border: 1px solid #F0E6D2;
+      ">
+      <div class="info-title" style="font-weight:bold; font-size: 1.1em; margin-bottom: 6px; color: #8B1A1A;">📜 游戏说明</div>
+1. 目标：按 <strong>草木→夯土→陶瓦→木构→青砖→琉璃→斗拱→砖石→空格</strong> 顺序归位<br>
+2. 操作：点击与空格相邻的方块移动 <br>
+3. 胜利：空格在右下角即为通关
+</div>
 
-    <div id="puzzleBoard" class="puzzle-board"></div>
+      <!-- 游戏主体：左右布局（紧凑对齐） -->
+      <div style="display: flex; gap: 20px; align-items: center; justify-content: center; flex-wrap: nowrap;">
+        
+        <!-- 左边：游戏面板（加边框+阴影，更精致） -->
+        <div style="
+          background: #fff;
+          padding: 15px;
+          border-radius: 12px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+          border: 1px solid #F0E6D2;
+        ">
+          <div id="puzzleBoard" class="puzzle-board" style="
+            display: grid;
+            grid-template-columns: repeat(3, 140px);
+            gap: 8px;
+          "></div>
+        </div>
+
+        <!-- 右边：步数、时间、按钮（紧凑+对齐） -->
+        <div style="
+          width: 220px;
+          background: #FDF6EC;
+          padding: 20px;
+          border-radius: 12px;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.07);
+          border: 1px solid #F0E6D2;
+          font-size: 1.1em;
+        ">
+          <div style="font-weight: bold; color: #8B1A1A; margin-bottom: 18px; padding-bottom: 8px; border-bottom: 1px dashed #E0C8A0;">
+            步数：<span id="stepCount">0</span>
+          </div>
+          <div style="font-weight: bold; color: #8B1A1A; margin-bottom: 20px; padding-bottom: 8px; border-bottom: 1px dashed #E0C8A0;">
+            时间：<span id="timeCount">00:00</span>
+          </div>
+
+          <button id="resetBtn" style="
+            width: 100%;
+            padding: 10px 0;
+            background: #8B1A1A;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+          " onmouseover="this.style.background='#A62424'" onmouseout="this.style.background='#8B1A1A'">重新开始</button>
+        </div>
+      </div>
+
+    </div>
   </div>
 </section>
 
-<div id="petals"></div>
+
 
 <!-- 花瓣容器 -->
 <div id="petals"></div>
 
 <!-- ========== 模型上色模块 ========== -->
 <div id="coloring-model" class="section">
-    <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🖌️ 古建模型上色</h2>
+    <h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red); text-align: center; margin-bottom: 30px;">🖌️ 古建填色</h2>
     
     <!-- 上色操作区 -->
     <div style="display: grid; grid-template-columns: 1fr 300px; gap: 40px; max-width: 1200px; margin: 0 auto; padding: 0 20px;">
@@ -602,12 +1254,22 @@ window.addEventListener('DOMContentLoaded', createPetals);
             </div>
             <canvas id="coloringCanvas" width="800" height="600" style="border: 2px solid #8B4513; border-radius: 8px; background: white; width: 100%; height: auto;"></canvas>
             
-            <!-- 画布操作按钮 -->
-            <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
-                <button id="clearCanvas" style="padding: 8px 24px; background: #8B1A1A; color: white; border: 2px solid #D4AF37; border-radius: 20px; cursor: pointer;">清空画布</button>
-                <button id="saveDrawing" style="padding: 8px 24px; background: #D4AF37; color: #8B1A1A; border: 2px solid #8B1A1A; border-radius: 20px; cursor: pointer;">保存作品</button>
-                <button id="resetDrawing" style="padding: 8px 24px; background: #f8f5f0; color: #8B1A1A; border: 2px solid #8B1A1A; border-radius: 20px; cursor: pointer;">重置线稿</button>
-			</div>
+            <!-- 画布操作按钮（仅调整按钮行布局，其他不变） -->
+            <div style="margin-top: 20px;">
+                <!-- 第一行：线稿切换按钮（四合院/民居/宫殿/桥梁） -->
+                <div style="display: flex; flex-wrap:wrap; gap: 15px; justify-content: center; margin-bottom: 12px;">
+                    <button id="drawingSiheyuan" style="padding: 6px 12px; background:#fff; color:#8B1A1A; border:1px solid #8B1A1A; border-radius:12px; cursor:pointer;">四合院</button>
+                    <button id="drawingHouse" style="padding: 6px 12px; background:#fff; color:#8B1A1A; border:1px solid #8B1A1A; border-radius:12px; cursor:pointer;">民居</button>
+                    <button id="drawingPalace" style="padding: 6px 12px; background:#fff; color:#8B1A1A; border:1px solid #8B1A1A; border-radius:12px; cursor:pointer;">宫殿</button>
+                    <button id="drawingBridge" style="padding: 6px 12px; background:#fff; color:#8B1A1A; border:1px solid #8B1A1A; border-radius:12px; cursor:pointer;">桥梁</button>
+                </div>
+                <!-- 第二行：核心操作按钮（清空/保存/重置） -->
+                <div style="display: flex; flex-wrap:wrap; gap: 15px; justify-content: center;">
+                    <button id="clearCanvas" style="padding: 8px 24px; background: #8B1A1A; color: white; border: 2px solid #D4AF37; border-radius: 20px; cursor: pointer;">清空画布</button>
+                    <button id="saveDrawing" style="padding: 8px 24px; background: #D4AF37; color: #8B1A1A; border: 2px solid #8B1A1A; border-radius: 20px; cursor: pointer;">保存作品</button>
+                    <button id="resetDrawing" style="padding: 8px 24px; background: #f8f5f0; color: #8B1A1A; border: 2px solid #8B1A1A; border-radius: 20px; cursor: pointer;">重置线稿</button>
+                </div>
+            </div>
         </div>
        
         <!-- 颜色选择区 -->
@@ -626,41 +1288,45 @@ window.addEventListener('DOMContentLoaded', createPetals);
                     <div class="color-option" data-color="#000000" style="width: 40px; height: 40px; background: #000000; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
                     <div class="color-option" data-color="#2E8B57" style="width: 40px; height: 40px; background: #2E8B57; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
                     <div class="color-option" data-color="#4169E1" style="width: 40px; height: 40px; background: #4169E1; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#A0522D" style="width: 40px; height: 40px; background: #A0522D; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#708090" style="width: 40px; height: 40px; background: #708090; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
+                    <div class="color-option" data-color="#F5DEB3" style="width: 40px; height: 40px; background: #F5DEB3; border-radius: 50%; cursor: pointer; border: 2px solid transparent;"></div>
                 </div>
             </div>
             
-            <!-- 建筑部件快速上色 -->
+            <!-- 🔥 古风装饰印章（替换一键上色） -->
             <div style="margin-bottom: 30px;">
-                <h4 style="color: #666; font-size: 14px; margin-bottom: 10px;">快速上色（按部件）</h4>
+                <h4 style="color: #666; font-size: 14px; margin-bottom: 10px;">🏮 古风装饰</h4>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button class="part-color-btn" data-part="roof" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
-                        <span style="display: inline-block; width: 15px; height: 15px; background: #8B1A1A; margin-right: 10px;"></span>屋顶（朱红）
+                    <button class="stamp-btn" data-stamp="❀" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
+                        ❀ 梅花
                     </button>
-                    <button class="part-color-btn" data-part="wall" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
-                        <span style="display: inline-block; width: 15px; height: 15px; background: #FFFFFF; margin-right: 10px; border: 1px solid #ccc;"></span>墙面（白色）
+                    <button class="stamp-btn" data-stamp="☁️" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
+                        ☁️ 祥云
                     </button>
-                    <button class="part-color-btn" data-part="pillar" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
-                        <span style="display: inline-block; width: 15px; height: 15px; background: #D4AF37; margin-right: 10px;"></span>立柱（金黄）
-                    </button>
-                    <button class="part-color-btn" data-part="base" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
-                        <span style="display: inline-block; width: 15px; height: 15px; background: #8B4513; margin-right: 10px;"></span>台基（褐色）
+                    <button class="stamp-btn" data-stamp="福" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
+    <span style="font-family: '华文行书', '华文楷书', 'STXingkai', cursive; font-size: 24px; color: #c00; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">福</span> 福字
+					</button>
+                    <button class="stamp-btn" data-stamp="🏮" style="padding: 8px; text-align: left; border: 1px solid #e8d8c8; border-radius: 8px; background: #f8f5f0; cursor: pointer;">
+                        🏮 灯笼
                     </button>
                 </div>
             </div>
-            
-            <!-- 画笔大小调节 -->
+<!-- 印章大小调节 -->
+<div style="margin-bottom: 20px;">
+    <h4 style="color: #666; font-size: 14px; margin-bottom: 10px;">印章大小</h4>
+    <input type="range" id="stampSize" min="30" max="120" value="60" style="width:100%">
+    <span id="stampSizeValue" style="font-size:12px; color:#666;">60px</span>
+</div>
+            <!-- 画笔大小 -->
             <div>
                 <h4 style="color: #666; font-size: 14px; margin-bottom: 10px;">画笔大小</h4>
-                <input type="range" id="brushSize" min="1" max="20" value="5" style="width: 100%;">
-                <div style="display: flex; justify-content: space-between; color: #666; font-size: 12px;">
-                    <span>细</span>
-                    <span id="brushSizeValue">5px</span>
-                    <span>粗</span>
-                </div>
+                <input type="range" id="brushSize" min="2" max="30" value="5" style="width:100%">
+                <span id="brushSizeValue" style="font-size:12px; color:#666;">5px</span>
             </div>
         </div>
     </div>
-    
+</div>
     <!-- 作品展示区 -->
 	<div style="max-width: 1390px; margin: 40px auto 0; padding: 0 20px;">
 		<h3 style="color: #8B4513; margin-bottom: 20px; text-align: center; font-size: 1.5em;">🎨 优秀填色作品欣赏</h3>
@@ -953,13 +1619,7 @@ border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; fo
 
 </div>
 
-		<!-- ========== 历史长河模块 OK ========== -->
-		<div id="timeline" class="section">
-			<h2 class="font-calligraphy" style="font-size: 3em; color: var(--primary-red);							text-align: center; margin-bottom: 30px;">📜 历史长河</h2>
-			<div class="timeline-river" id="timelineRiver">
-				<!-- 时间轴内容由JS动态生成 -->
-			</div>
-		</div>
+		
 		<!-- ========== 互动留言板块 OK========== -->
 		<div id="comment-section" class="section">
 			<h2 class="font-calligraphy" style="font-size: 2.5em; 
@@ -1044,9 +1704,7 @@ border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; fo
     </div> -->
 
 
-    <!-- 加载画面 -->
-    <div class="loader" id="loader"><div class="loader-text">营造法式</div><div>正在加载古建筑精华...</div></div>
-
+   
     <!-- 水墨背景 -->
     <div class="ink-bg"></div>
 
@@ -1099,6 +1757,13 @@ border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; fo
 					<button class="control-btn" id="musicPrevBtn" title="上一首">⏮</button>
 					<button class="control-btn" id="musicNextBtn" title="下一首">⏭</button>
 				</div>
+
+				<!-- 音量调节（新增，不破坏原有布局） -->
+				<div class="volume-control" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+					<span style="font-size:14px; color:#333;">🔊</span>
+					<input type="range" id="volumeSlider" min="0" max="100" value="80" 
+						style="width:100px; height:6px; appearance:none; border-radius:3px; background:#ddd; outline:none;">
+				</div>
 				
 				<!-- 本地音乐上传区 -->
 				<div class="music-upload">
@@ -1110,6 +1775,10 @@ border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; fo
 			</div>
 		</div>
 	</div>
+
+
+
+
 	<!-- 返回顶部按钮 -->
 	<button id="backToTop" class="back-to-top" title="返回顶部">
 		<span class="arrow">↑</span>
@@ -1170,6 +1839,7 @@ border: none; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; fo
     <script src="js/music.js"></script>
 	<script src="js/comment.js"></script>
 	<script src="js/color.js"></script>	
+	<script src="js/protect.js"></script>
     <script type="module" src="js/game.js"></script>
 	<link rel="stylesheet" href="style.css">
 	<script src="game.js" defer></script>

@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中华建筑之美 - 官府衙门</title>
+    <style>
+        /* ========== 基础变量（核心配色体系） ========== */
+        :root {
+            --cinnabar: #B22222;    /* 朱砂红 - 主强调色 */
+            --gold: #D4AF37;        /* 鎏金 - 核心点缀色 */
+            --dark-red: #8B0000;    /* 暗红 - 渐变/背景辅助 */
+            --ink-black: #1a1a1a;   /* 墨黑 - 主背景 */
+            --paper: #F5F0E6;       /* 宣纸色 - 主文字 */
+            --jade: #2E8B57;        /* 翡翠绿 - 备用点缀 */
+            --sky-blue: #87CEEB;    /* 天青蓝 - 备用点缀 */
+            --shadow-gold: rgba(212, 175, 55, 0.3); /* 金色阴影 */
+            --shadow-red: rgba(178, 34, 34, 0.2);   /* 红色阴影 */
+            --overlay: rgba(0, 0, 0, 0.7);          /* 通用遮罩 */
+        }
+
+        /* ========== 全局样式 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'SimSun', 'STSong', serif;
+            background-color: var(--ink-black);
+            color: var(--paper);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+
+        /* ========== 背景纹理 ========== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M50 50c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10s-10-4.477-10-10 4.477-10 10-10zM10 10c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10c0 5.523-4.477 10-10 10S0 25.523 0 20s4.477-10 10-10zm10 8c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8zm40 40c4.418 0 8-3.582 8-8s-3.582-8-8-8-8 3.582-8 8 3.582 8 8 8z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-blend-mode: overlay;
+            background-color: rgba(26, 26, 26, 0.95);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* ========== 返回首页按钮（新增） ========== */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, var(--cinnabar), var(--dark-red));
+            color: var(--paper);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow-red);
+            color: var(--gold);
+        }
+
+        /* ========== 下载按钮 ========== */
+        .download-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, var(--gold), #B8860B);
+            color: var(--ink-black);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px var(--shadow-gold);
+        }
+
+        /* ========== 英雄封面 ========== */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                var(--overlay) 0%,
+                rgba(139,0,0,0.3) 50%,
+                var(--overlay) 100%);
+            z-index: 1;
+        }
+
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            animation: slowZoom 30s ease-in-out infinite alternate;
+        }
+
+        @keyframes slowZoom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero-emblem {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            border: 3px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 var(--shadow-gold); }
+            50% { box-shadow: 0 0 30px 10px rgba(212, 175, 55, 0.2); }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold), #FFD700, var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 0.1em;
+            margin-bottom: 20px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            color: var(--paper);
+            opacity: 0.9;
+            margin-bottom: 40px;
+            letter-spacing: 0.3em;
+        }
+
+        .hero-divider {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 0 auto 40px;
+        }
+
+        .hero-poem {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: rgba(245, 240, 230, 0.8);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 2;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        .scroll-indicator span {
+            display: block;
+            width: 30px;
+            height: 50px;
+            border: 2px solid var(--gold);
+            border-radius: 25px;
+            position: relative;
+        }
+
+        .scroll-indicator span::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: scrollDot 2s ease-in-out infinite;
+        }
+
+        @keyframes scrollDot {
+            0%, 100% { top: 10px; opacity: 1; }
+            50% { top: 25px; opacity: 0.3; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* ========== 章节通用样式 ========== */
+        .chapter {
+            padding: 40px 20px; /* 紧凑间距 */
+            position: relative;
+            min-height: auto;
+        }
+
+        .chapter-header {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease;
+        }
+
+        .chapter-header.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chapter-number {
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--shadow-gold);
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: -1;
+        }
+
+        .chapter-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--gold);
+        }
+
+        .chapter-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--gold);
+            margin-bottom: 15px;
+            letter-spacing: 0.1em;
+        }
+
+        .chapter-subtitle {
+            font-size: 1.2rem;
+            color: rgba(245, 240, 230, 0.7);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .chapter-divider {
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--cinnabar), transparent);
+            margin: 30px auto;
+        }
+
+        /* ========== 内容容器 ========== */
+        .content-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ========== 建筑卡片 ========== */
+        .building-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 1s ease;
+        }
+
+        .building-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .building-card:nth-child(even) {
+            direction: rtl;
+        }
+
+        .building-card:nth-child(even) > * {
+            direction: ltr;
+        }
+
+        .building-images {
+            position: relative;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            cursor: zoom-in;
+            transition: all 0.3s ease;
+        }
+
+        .main-image:hover {
+            box-shadow: 0 25px 70px rgba(0,0,0,0.6);
+        }
+
+        /* ========== 轮播图样式 ========== */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            margin-top: 15px;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+
+        .carousel-wrapper {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .carousel-item {
+            flex: 0 0 33.333%;
+            padding: 0 5px;
+        }
+
+        .carousel-thumb {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .carousel-thumb:hover, .carousel-thumb.active {
+            transform: scale(1.05);
+            border-color: var(--gold);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background: rgba(178, 34, 34, 0.8);
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-btn:hover {
+            background: var(--cinnabar);
+            box-shadow: 0 0 10px var(--shadow-gold);
+        }
+
+        .carousel-prev {
+            left: 5px;
+        }
+
+        .carousel-next {
+            right: 5px;
+        }
+
+        .building-info {
+            padding: 20px;
+        }
+
+        .building-name {
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .building-name::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--cinnabar);
+        }
+
+        .building-era {
+            font-size: 1rem;
+            color: var(--cinnabar);
+            margin-bottom: 20px;
+            letter-spacing: 0.2em;
+        }
+
+        .info-section {
+            margin-bottom: 25px;
+        }
+
+        .info-section h4 {
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-section h4::before {
+            content: '◆';
+            color: var(--cinnabar);
+            font-size: 0.8rem;
+        }
+
+        .info-section p {
+            color: rgba(245, 240, 230, 0.85);
+            text-align: justify;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid var(--shadow-gold);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(212, 175, 55, 0.15);
+            box-shadow: 0 5px 15px var(--shadow-gold);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            color: var(--gold);
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: rgba(245, 240, 230, 0.7);
+            margin-top: 5px;
+        }
+
+       /* ========== 礼制传承板块样式（适配两行显示） ========== */
+:root {
+    --ink-black: #1a1a1a;
+    --shadow-gold: rgba(212, 175, 55, 0.3);
+    --gold: #D4AF37;
+}
+
+.epilogue {
+    background: linear-gradient(180deg, var(--ink-black) 0%, rgba(139,0,0,0.2) 50%, var(--ink-black) 100%);
+    padding: 60px 20px;
+}
+
+/* 加宽卡片最小宽度，避免文本挤行 */
+.wisdom-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 40px;
+    margin-top: 40px;
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.wisdom-card {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(139,0,0,0.1));
+    border: 1px solid var(--shadow-gold);
+    border-radius: 15px;
+    padding: 40px 50px; /* 左右加宽内边距 */
+    text-align: center;
+    transition: all 0.5s ease;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.wisdom-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px var(--shadow-gold);
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(139,0,0,0.15));
+}
+
+.wisdom-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    color: var(--gold);
+}
+
+.wisdom-title {
+    font-size: 1.5rem;
+    color: var(--gold);
+    margin-bottom: 15px;
+}
+
+.wisdom-desc {
+    color: rgba(245, 240, 230, 0.8);
+    line-height: 2; /* 加大行高，两行更清晰 */
+    font-size: 1rem;
+    white-space: pre-line; /* 只认手动<br>换行 */
+    word-break: keep-all; /* 禁止中文词汇拆分 */
+}
+
+        /* ========== 页脚 ========== */
+        .footer {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(0,0,0,0.5);
+            border-top: 1px solid var(--shadow-gold);
+        }
+
+        .footer-emblem {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--gold);
+        }
+
+        .footer-text {
+            color: rgba(245, 240, 230, 0.6);
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+        }
+
+        .footer-quote {
+            max-width: 600px;
+            margin: 30px auto 0;
+            /*font-style: italic;*/
+            color: rgba(245, 240, 230, 0.5);
+        }
+
+        /* ========== 导航点 ========== */
+        .nav-dots {
+            position: fixed;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--shadow-gold);
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-dot::before {
+            content: attr(data-label);
+            position: absolute;
+            right: 25px;
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 12px;
+            color: var(--gold);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .nav-dot:hover::before {
+            opacity: 1;
+        }
+
+        .nav-dot.active {
+            background: var(--gold);
+            box-shadow: 0 0 15px var(--shadow-gold);
+            transform: scale(1.2);
+        }
+
+        /* ========== 加载动画 ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--ink-black);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-top: 30px;
+            letter-spacing: 0.3em;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid var(--shadow-gold);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== 图片模态框 ========== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            animation: zoomIn 0.3s ease;
+            border: 2px solid var(--gold);
+            border-radius: 8px;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: var(--gold);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 2001;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+            color: var(--cinnabar);
+        }
+
+        /* ========== 响应式设计 ========== */
+        @media (max-width: 1024px) {
+            .building-card {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .building-card:nth-child(even) {
+                direction: ltr;
+            }
+
+            .nav-dots {
+                display: none;
+            }
+
+            .home-btn, .download-btn {
+                top: auto;
+                bottom: 20px;
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+            .home-btn { left: 20px; }
+            .download-btn { right: 20px; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                letter-spacing: 0.05em;
+            }
+
+            .chapter {
+                padding: 40px 15px;
+            }
+
+            .building-name {
+                font-size: 1.8rem;
+            }
+
+            .main-image {
+                height: 250px;
+            }
+
+            .carousel-thumb {
+                height: 60px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .wisdom-card {
+                padding: 25px 15px;
+            }
+
+            .wisdom-icon {
+                font-size: 3rem;
+            }
+
+            .modal-close {
+                font-size: 30px;
+                right: 20px;
+                top: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-emblem {
+                width: 90px;
+                height: 90px;
+                font-size: 45px;
+            }
+
+            .chapter-number {
+                font-size: 3.5rem;
+            }
+
+            .chapter-icon {
+                font-size: 3rem;
+            }
+
+            .loading-text {
+                font-size: 1.2rem;
+                letter-spacing: 0.2em;
+            }
+
+            .loading-spinner {
+                width: 45px;
+                height: 45px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 返回首页按钮 -->
+  <a href="index.html#official" class="home-btn" target="_self">🏠 返回首页</a>
+
+    <!-- 导航点（新增第二章） -->
+    <div class="nav-dots">
+        <div class="nav-dot active" data-label="封面" onclick="scrollToSection('hero')"></div>
+        <div class="nav-dot" data-label="第一章 内乡县衙" onclick="scrollToSection('chapter1')"></div>
+        <div class="nav-dot" data-label="第二章 平遥县衙" onclick="scrollToSection('chapter2')"></div>
+        <div class="nav-dot" data-label="尾篇" onclick="scrollToSection('epilogue')"></div>
+    </div>
+
+    <!-- 图片模态框 -->
+    <div class="modal" id="imageModal">
+        <span class="modal-close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <!-- 英雄封面（已改官府衙门） -->
+    <section class="hero" id="hero">
+        <img src="https://pic.baike.soso.com/ugc/baikepic2/25802/20220414112444_12244.jpg/0" alt="清代官府衙门" class="hero-bg">
+        <div class="hero-content">
+            <div class="hero-emblem">衙</div>
+            <h1>秩序之道</h1>
+            <div class="hero-subtitle">礼制森严，官制威仪</div>
+            <div class="hero-divider"></div>
+            <div class="hero-poem">
+                红墙青瓦显威仪，<br>
+                礼制森严序有规。<br>
+                一院一堂承法度，<br>
+                千年官制铸丰碑。
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </section>
+
+    <!-- 第一章：内乡县衙（1911年前） -->
+    <section class="chapter" id="chapter1">
+        <div class="chapter-header">
+            <div class="chapter-icon">🏛️</div>
+            <h2 class="chapter-title">官署威仪</h2>
+            <div class="chapter-subtitle">法度所在，礼制之邦</div>
+            <div class="chapter-divider"></div>
+        </div>
+        <div class="content-container">
+            <div class="building-card">
+                <div class="building-images">
+                    <!-- 主图 -->
+                    <img src="image/2.7.jpg" alt="清代官府衙门" class="main-image" id="mainImage1" onclick="openModal(this.src)">
+                    
+                    <!-- 轮播图容器 -->
+                    <div class="carousel-container">
+                        <div class="carousel-btn carousel-prev" onclick="moveCarousel(-1, 1)">&#8249;</div>
+                        <div class="carousel-btn carousel-next" onclick="moveCarousel(1, 1)">&#8250;</div>
+                        
+                        <div class="carousel-wrapper" id="carouselWrapper1">
+                            <div class="carousel-item">
+                                <img src="image/2.6.jpg" alt="衙门大堂" class="carousel-thumb" onclick="changeMainImage(this.src, this, 1)" data-index="0">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="image/2.4.jpg" alt="衙门内院" class="carousel-thumb" onclick="changeMainImage(this.src, this, 1)" data-index="1">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="image/2.6.jpg" alt="清代官府衙门" class="carousel-thumb active" onclick="changeMainImage(this.src, this, 1)" data-index="2">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="image/2.4.jpg" alt="衙门大堂" class="carousel-thumb" onclick="changeMainImage(this.src, this, 1)" data-index="0">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="image/2.6.jpg" alt="衙门大堂" class="carousel-thumb" onclick="changeMainImage(this.src, this, 1)" data-index="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="building-info">
+                    <h3 class="building-name">内乡县衙</h3>
+                    <div class="building-era">元代始建 · 明清重修 · 全国唯一保存完整的清代县衙</div>
+                     <div class="info-section">
+                        <h4>历史故事</h4>
+                        <p>清代光绪年间，知县章炳焘主持重修内乡县衙，他为官清廉、工程严谨，留下了“一分一文，我之名节；一厘一毫，民之脂膏”的千古官箴。内乡县衙还曾审理过无数民间奇案、田土纠纷、盗抢案件，是真实版的“古代基层法院”。百年来，它见证了清代地方治理、民生百态，被誉为“一座内乡衙，半部官文化”。</p>
+                    </div>
+                    <div class="info-section">
+                        <h4>建筑规制</h4>
+                        <p>内乡县衙遵循清代“左文右武、前朝后寝”的礼制布局，中轴线上依次为照壁、大门、仪门、大堂、二堂、三堂、后花园，共六进院落。大堂为知县审案理政的核心场所，威严庄重；两侧分别为吏、户、礼、兵、刑、工六房，结构严谨、等级森严，完美再现了古代县级官署的行政格局。</p>
+                    </div>
+                    <div class="info-section">
+                        <h4>历史意义</h4>
+                        <p>内乡县衙是中国古代地方行政制度与建筑礼制的活化石，不仅完整保留了清代县级政权的运作场景，更承载着古代法治文化、官箴文化与礼制思想。它见证了封建王朝基层治理体系的兴衰变迁，是研究中国古代政治制度、司法体系、社会民生的珍贵实物资料，在中华古建筑史与政治文化史上具有不可替代的价值。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 第二章：平遥县衙（1911年前） -->
+    <section class="chapter" id="chapter2">
+        <div class="chapter-header">
+            <div class="chapter-icon">🏯</div>
+            <h2 class="chapter-title">晋地衙署</h2>
+            <div class="chapter-subtitle">晋商故里，吏治典范</div>
+            <div class="chapter-divider"></div>
+        </div>
+        <div class="content-container">
+            <div class="building-card">
+                <div class="building-images">
+                    <!-- 主图 -->
+                    <img src="image/221.jpg" alt="平遥县衙" class="main-image" id="mainImage2" onclick="openModal(this.src)">
+                    
+                    <!-- 轮播图容器 -->
+                    <div class="carousel-container">
+                        <div class="carousel-btn carousel-prev" onclick="moveCarousel(-1, 2)">&#8249;</div>
+                        <div class="carousel-btn carousel-next" onclick="moveCarousel(1, 2)">&#8250;</div>
+                        
+                        <div class="carousel-wrapper" id="carouselWrapper2">
+                            <div class="carousel-item">
+                                <img src="image/222.jpg" alt="平遥县衙大堂" class="carousel-thumb" onclick="changeMainImage(this.src, this, 2)" data-index="0">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="image/223.jpg" alt="平遥县衙牢狱" class="carousel-thumb" onclick="changeMainImage(this.src, this, 2)" data-index="1">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="image/221.jpg" alt="平遥县衙全景" class="carousel-thumb active" onclick="changeMainImage(this.src, this, 2)" data-index="2">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="image/223.jpg" alt="平遥县衙大堂" class="carousel-thumb" onclick="changeMainImage(this.src, this, 2)" data-index="0">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="image/222.jpg" alt="平遥县衙牢狱" class="carousel-thumb" onclick="changeMainImage(this.src, this, 2)" data-index="1">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="building-info">
+                    <h3 class="building-name">平遥县衙</h3>
+                    <div class="building-era">北魏始建 · 明清扩建 · 中国现存最古老的县衙之一</div>
+                     <div class="info-section">
+                        <h4>历史故事</h4>
+                        <p>平遥县衙始建于北魏，定型于元明清，清光绪年间知县锡良主持大规模修葺，形成今日格局。作为晋商故里的核心行政机构，平遥县衙不仅掌管地方政务，更深度参与晋商贸易管理、票号监管，是明清时期晋商崛起的重要行政保障。县衙内保留的“亲民堂”“勤慎堂”等建筑，见证了清代知县恪守“勤、慎、廉”的为官之道。</p>
+                    </div>
+                    <div class="info-section">
+                        <h4>建筑规制</h4>
+                        <p>平遥县衙占地26000余平方米，整体布局遵循“前朝后寝、左文右武、中轴对称”原则，中轴线上设大门、仪门、大堂、二堂、内宅等，东侧设吏、户、礼房，西侧设兵、刑、工房，另设牢狱、库房、膳房等附属建筑。其大堂“亲民堂”面阔五间，进深三间，是明清县级衙署大堂的典型形制，堂前戒石坊刻“尔俸尔禄，民脂民膏，下民易虐，上天难欺”，彰显吏治警示。</p>
+                    </div>
+                    <div class="info-section">
+                        <h4>历史意义</h4>
+                        <p>平遥县衙是中国北方地区保存最完整、规模最大的古代县级衙署，也是世界文化遗产平遥古城的核心组成部分。它不仅完整展现了明清时期县级政权的行政架构与运作模式，更反映了晋商文化与吏治文化的深度融合，是研究中国古代基层治理、北方建筑规制、晋商社会生态的重要实物遗存，具有极高的历史、艺术与科学价值。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 尾篇 -->
+<section class="chapter epilogue" id="epilogue">
+    <div class="chapter-header">
+        <div class="chapter-icon">📜</div>
+        <h2 class="chapter-title">礼制传承</h2>
+        <div class="chapter-subtitle">法度长存，古韵流芳</div>
+        <div class="chapter-divider"></div>
+    </div>
+    <div class="content-container">
+        <div class="wisdom-grid">
+            <div class="wisdom-card">
+                <div class="wisdom-icon">⚖️</div>
+                <h3 class="wisdom-title">法度秩序</h3>
+                <p class="wisdom-desc">官府建筑以空间布局诠释礼法制度，一进一院皆有规矩，一梁一柱均合规制，是古代社会秩序与法治精神的直观体现。</p>
+            </div>
+            <div class="wisdom-card">
+                <div class="wisdom-icon">🏛️</div>
+                <h3 class="wisdom-title">官制文化</h3>
+                <p class="wisdom-desc">从中央官署到地方县衙，建筑等级严格对应行政级别，<br>完整展现了中国古代官僚体系的层级结构与运行逻辑。</p>
+            </div>
+            <div class="wisdom-card">
+                <div class="wisdom-icon">📜</div>
+                <h3 class="wisdom-title">历史见证</h3>
+                <p class="wisdom-desc">每一座古衙都是历史的活化石，记录着王朝兴衰、民生百态，<br>是中华传统政治文明与建筑艺术的珍贵遗产。</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+    <!-- 页脚（已改官府版） -->
+    <footer class="footer">
+        <div class="footer-emblem">衙</div>
+        <div class="footer-text">秩序之道 · 礼制威仪</div>
+        <div class="footer-quote">
+            『以建筑载礼法,以规制明纲常』
+        </div>
+    </footer>
+
+    <script>
+        // 全局变量（适配多轮播）
+        let currentCarouselIndex = [0, 0]; // 索引0:第一章轮播 索引1:第二章轮播
+        let carouselInterval = [null, null];
+        const totalImages = 3;
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initScrollAnimations();
+            initImageModal();
+            initDownloadButton();
+            initNavDots();
+            initCarousel(1); // 初始化第一章轮播
+            initCarousel(2); // 初始化第二章轮播
+            
+            // 隐藏加载动画
+            setTimeout(() => {
+                // 补全loadingOverlay元素（原代码遗漏，此处补充）
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.id = 'loadingOverlay';
+                loadingOverlay.className = 'loading-overlay';
+                loadingOverlay.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">加载中...</div>
+                `;
+                document.body.appendChild(loadingOverlay);
+                
+                loadingOverlay.classList.add('hidden');
+            }, 1500);
+        });
+
+        // 初始化滚动动画
+        function initScrollAnimations() {
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.chapter-header, .building-card').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // 初始化图片模态框
+        function initImageModal() {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // 打开图片模态框
+        function openModal(src) {
+            document.getElementById('imageModal').classList.add('active');
+            document.getElementById('modalImage').src = src;
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭图片模态框
+        function closeModal() {
+            document.getElementById('imageModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // 初始化下载按钮
+        function initDownloadButton() {
+            const downloadBtn = document.createElement('button');
+            downloadBtn.id = 'downloadBtn';
+            downloadBtn.className = 'download-btn';
+            downloadBtn.innerText = '📥 下载页面';
+            document.body.appendChild(downloadBtn);
+            
+            downloadBtn.addEventListener('click', function() {
+                const htmlContent = document.documentElement.outerHTML;
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '中华建筑之美-官府衙门.html';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        // 初始化导航点
+        function initNavDots() {
+            window.addEventListener('scroll', updateActiveNavDot);
+        }
+
+        // 更新激活的导航点（适配新增的第二章）
+        function updateActiveNavDot() {
+            const sections = ['hero', 'chapter1', 'chapter2', 'epilogue'];
+            const navDots = document.querySelectorAll('.nav-dot');
+            let currentSection = '';
+
+            sections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 100 && rect.bottom >= 100) {
+                    currentSection = sectionId;
+                }
+            });
+
+            navDots.forEach((dot, index) => {
+                if (sections[index] === currentSection) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // 滚动到指定章节
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // 键盘事件监听
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+
+        // 轮播图（适配多轮播）
+        function initCarousel(chapterNum) {
+            const index = chapterNum - 1;
+            carouselInterval[index] = setInterval(() => {
+                moveCarousel(1, chapterNum);
+            }, 3000);
+            
+            const carouselContainer = document.querySelectorAll('.carousel-container')[index];
+            carouselContainer.addEventListener('mouseenter', () => {
+                clearInterval(carouselInterval[index]);
+            });
+            
+            carouselContainer.addEventListener('mouseleave', () => {
+                carouselInterval[index] = setInterval(() => {
+                    moveCarousel(1, chapterNum);
+                }, 3000);
+            });
+        }
+
+        function moveCarousel(direction, chapterNum) {
+            const index = chapterNum - 1;
+            const wrapper = document.getElementById(`carouselWrapper${chapterNum}`);
+            const itemWidth = 100 / 3;
+            
+            currentCarouselIndex[index] += direction;
+            
+            if (currentCarouselIndex[index] >= totalImages) {
+                wrapper.style.transition = 'none';
+                wrapper.style.transform = `translateX(-${itemWidth * totalImages}%)`;
+                void wrapper.offsetWidth;
+                currentCarouselIndex[index] = 0;
+                wrapper.style.transition = 'transform 0.5s ease';
+                wrapper.style.transform = `translateX(-${itemWidth * currentCarouselIndex[index]}%)`;
+            } else if (currentCarouselIndex[index] < 0) {
+                wrapper.style.transition = 'none';
+                wrapper.style.transform = `translateX(-${itemWidth * (totalImages - 1)}%)`;
+                void wrapper.offsetWidth;
+                currentCarouselIndex[index] = totalImages - 1;
+                wrapper.style.transition = 'transform 0.5s ease';
+                wrapper.style.transform = `translateX(-${itemWidth * currentCarouselIndex[index]}%)`;
+            } else {
+                wrapper.style.transform = `translateX(-${itemWidth * currentCarouselIndex[index]}%)`;
+            }
+            
+            updateCarouselActive(chapterNum);
+        }
+
+        function updateCarouselActive(chapterNum) {
+            const index = chapterNum - 1;
+            const thumbs = document.querySelectorAll(`#carouselWrapper${chapterNum} .carousel-thumb`);
+            thumbs.forEach((thumb, idx) => {
+                if (idx < totalImages) {
+                    if (idx === currentCarouselIndex[index]) {
+                        thumb.classList.add('active');
+                    } else {
+                        thumb.classList.remove('active');
+                    }
+                }
+            });
+        }
+
+        function changeMainImage(src, element, chapterNum) {
+            const mainImage = document.getElementById(`mainImage${chapterNum}`);
+            mainImage.src = src;
+            
+            const thumbs = document.querySelectorAll(`#carouselWrapper${chapterNum} .carousel-thumb`);
+            thumbs.forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            element.classList.add('active');
+            
+            const index = chapterNum - 1;
+            currentCarouselIndex[index] = parseInt(element.dataset.index);
+            const wrapper = document.getElementById(`carouselWrapper${chapterNum}`);
+            const itemWidth = 100 / 3;
+            wrapper.style.transform = `translateX(-${itemWidth * currentCarouselIndex[index]}%)`;
+        }
+    </script>
+</body>
+</html>
