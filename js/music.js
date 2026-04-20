@@ -16,8 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             name: 'Pleasure',
             url: 'music/huankuai.mp3',
             cover: 'https://img.icons8.com/fluency/96/000000/music.png'
-        },
-        
+        },        
         {
             name: 'Guita',
             url: 'music/jita.mp3',
