@@ -1,36 +1,28 @@
-// ========== 音乐播放器（支持默认音乐、歌单、本地上传） ==========
+// ========== 音乐播放器（支持默认音乐、歌单、本地上传 + 音量控制） ==========
 document.addEventListener('DOMContentLoaded', function() {
     // ========== 内置歌单（古风音乐） ==========
     const playlist = [
-         {
-            name: 'BGM',
-            url: 'music/bgm.mp3',
-            cover: 'https://img.icons8.com/fluency/96/000000/music.png'
-        },
-		{
-            name: 'Pleasure',
-            url: 'music/huankuai.mp3',
-            cover: 'https://img.icons8.com/fluency/96/000000/music.png'
-        },
-
-        
         {
             name: 'Guita',
             url: 'music/jita.mp3',
             cover: 'https://img.icons8.com/fluency/96/000000/music.png'
         },
-        
+        {
+            name: 'Pleasure',
+            url: 'music/huankuai.mp3',
+            cover: 'https://img.icons8.com/fluency/96/000000/music.png'
+        },
         {
             name: 'BGM',
             url: 'music/bgm.mp3',
             cover: 'https://img.icons8.com/fluency/96/000000/music.png'
         },
-        
-        
-  
-]
-
-    ;
+        {
+            name: 'Guita',
+            url: 'music/jita.mp3',
+            cover: 'https://img.icons8.com/fluency/96/000000/music.png'
+        }
+    ];
 
     // DOM 元素
     const musicFileInput = document.getElementById('musicFile');
@@ -41,13 +33,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const musicName = document.getElementById('musicName');
     const playIcon = document.querySelector('.play-icon');
     const pauseIcon = document.querySelector('.pause-icon');
+    const volumeSlider = document.getElementById('volumeSlider'); // 音量滑块
 
     // 播放器状态
     let audio = null;
     let isPlaying = false;
-    let currentPlaylist = [...playlist];  // 当前播放列表（默认歌单）
+    let currentPlaylist = [...playlist];
     let currentIndex = 0;
-    let isLocalMusic = false;  // 是否正在播放本地音乐
+    let isLocalMusic = false;
 
     // ========== 初始化默认音频 ==========
     function initDefaultAudio() {
@@ -56,31 +49,28 @@ document.addEventListener('DOMContentLoaded', function() {
             audio = null;
         }
         audio = new Audio(currentPlaylist[currentIndex].url);
-        audio.loop = false;  // 不循环，播放完自动下一首
+        audio.loop = false;
+        audio.volume = 0.8; // 默认音量 80%
         updateMusicDisplay();
         
-        // 监听播放结束，自动下一首
         audio.addEventListener('ended', function() {
-            if (!isLocalMusic) {
-                playNext();
-            }
+            if (!isLocalMusic) playNext();
+        });
+    }
+
+    // ========== 音量控制 ==========
+    if (volumeSlider) {
+        volumeSlider.addEventListener('input', function() {
+            if (audio) audio.volume = this.value / 100;
         });
     }
 
     // ========== 更新界面显示 ==========
     function updateMusicDisplay() {
-        if (musicName) {
-            musicName.textContent = currentPlaylist[currentIndex].name;
-        }
+        if (musicName) musicName.textContent = currentPlaylist[currentIndex].name;
         if (musicStatus) {
-            if (isLocalMusic) {
-                musicStatus.textContent = '🎵 本地音乐';
-            } else {
-                musicStatus.textContent = `🎵 ${currentPlaylist[currentIndex].name}`;
-            }
+            musicStatus.textContent = isLocalMusic ? '🎵 本地音乐' : `🎵 ${currentPlaylist[currentIndex].name}`;
         }
-        
-        // 更新封面（如果有自定义封面）
         const coverImg = document.querySelector('.cover-img');
         if (coverImg && currentPlaylist[currentIndex].cover) {
             coverImg.src = currentPlaylist[currentIndex].cover;
@@ -89,18 +79,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ========== 播放音乐 ==========
     function playMusic() {
-        if (!audio) {
-            initDefaultAudio();
-        }
-        
+        if (!audio) initDefaultAudio();
         audio.play().then(() => {
             isPlaying = true;
             if (playIcon) playIcon.style.display = 'none';
             if (pauseIcon) pauseIcon.style.display = 'block';
-        }).catch(err => {
-            console.warn('播放失败:', err);
-            if (musicStatus) musicStatus.textContent = '播放失败，请点击页面后重试';
-        });
+        }).catch(err => console.warn('播放失败:', err));
     }
 
     // ========== 暂停音乐 ==========
@@ -118,22 +102,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if (index < 0) index = currentPlaylist.length - 1;
         if (index >= currentPlaylist.length) index = 0;
         currentIndex = index;
-        
         const wasPlaying = isPlaying;
-        
-        if (audio) {
-            audio.pause();
-        }
+        if (audio) audio.pause();
         
         audio = new Audio(currentPlaylist[currentIndex].url);
         audio.loop = false;
+        audio.volume = volumeSlider ? volumeSlider.value / 100 : 0.8; // 保持音量
         
-        audio.addEventListener('ended', function() {
-            if (!isLocalMusic) {
-                playNext();
-            }
-        });
-        
+        audio.addEventListener('ended', () => { if (!isLocalMusic) playNext(); });
         updateMusicDisplay();
         
         if (wasPlaying) {
@@ -141,73 +117,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 isPlaying = true;
                 if (playIcon) playIcon.style.display = 'none';
                 if (pauseIcon) pauseIcon.style.display = 'block';
-            }).catch(err => {
-                console.warn('播放失败:', err);
-            });
+            }).catch(err => console.warn('播放失败:', err));
         }
     }
 
-    // ========== 上一首 ==========
-    function playPrev() {
-        if (isLocalMusic) {
-            // 如果是本地音乐，切换回默认歌单
-            switchToDefaultPlaylist();
-            playPrev();
-            return;
-        }
-        playSong(currentIndex - 1);
-    }
+    // ========== 上一首 / 下一首 ==========
+    function playPrev() { if (isLocalMusic) { switchToDefaultPlaylist(); return; } playSong(currentIndex - 1); }
+    function playNext() { if (isLocalMusic) { switchToDefaultPlaylist(); return; } playSong(currentIndex + 1); }
 
-    // ========== 下一首 ==========
-    function playNext() {
-        if (isLocalMusic) {
-            // 如果是本地音乐，切换回默认歌单
-            switchToDefaultPlaylist();
-            playNext();
-            return;
-        }
-        playSong(currentIndex + 1);
-    }
-
-    // ========== 切换到默认歌单 ==========
+    // ========== 切换回默认歌单 ==========
     function switchToDefaultPlaylist() {
         if (isLocalMusic) {
-            // 停止当前本地音乐
-            if (audio) {
-                audio.pause();
-            }
+            if (audio) audio.pause();
             isLocalMusic = false;
             currentPlaylist = [...playlist];
             currentIndex = 0;
             initDefaultAudio();
-            if (isPlaying) {
-                audio.play().catch(() => {});
-            }
+            if (isPlaying) audio.play().catch(() => {});
             updateMusicDisplay();
-            if (musicStatus) musicStatus.textContent = `🎵 ${currentPlaylist[currentIndex].name}`;
         }
     }
 
     // ========== 加载本地音乐 ==========
     function loadLocalMusic(file) {
-        if (!file) return;
-        
-        if (!file.type.includes('audio')) {
-            if (musicStatus) musicStatus.textContent = '请选择音频文件';
-            return;
-        }
-
+        if (!file || !file.type.includes('audio')) return;
         const audioUrl = URL.createObjectURL(file);
-        
-        if (audio) {
-            audio.pause();
-        }
+        if (audio) audio.pause();
         
         audio = new Audio(audioUrl);
+        audio.volume = volumeSlider ? volumeSlider.value / 100 : 0.8;
         isLocalMusic = true;
         isPlaying = false;
         
-        // 创建临时歌单项
         currentPlaylist = [{
             name: file.name.replace(/\.[^/.]+$/, ''),
             url: audioUrl,
@@ -217,78 +158,30 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (musicName) musicName.textContent = file.name;
         if (musicStatus) musicStatus.textContent = '🎵 本地音乐';
-        
         if (playIcon) playIcon.style.display = 'block';
         if (pauseIcon) pauseIcon.style.display = 'none';
         
-        // 更新封面为默认
         const coverImg = document.querySelector('.cover-img');
-        if (coverImg) {
-            coverImg.src = 'https://img.icons8.com/fluency/96/000000/music.png';
-        }
+        if (coverImg) coverImg.src = 'https://img.icons8.com/fluency/96/000000/music.png';
         
-        // 监听播放结束
-        audio.addEventListener('ended', function() {
+        audio.addEventListener('ended', () => {
             if (isLocalMusic) {
-                // 本地音乐播放完后自动切换回默认歌单
                 switchToDefaultPlaylist();
-                if (isPlaying) {
-                    playMusic();
-                }
+                if (isPlaying) playMusic();
             }
         });
     }
 
     // ========== 事件绑定 ==========
-    // 播放/暂停按钮
-    if (playBtn) {
-        playBtn.addEventListener('click', function() {
-            if (!audio) {
-                initDefaultAudio();
-            }
-            
-            if (isPlaying) {
-                pauseMusic();
-            } else {
-                playMusic();
-            }
-        });
-    }
+    if (playBtn) playBtn.addEventListener('click', () => isPlaying ? pauseMusic() : playMusic());
+    if (prevBtn) prevBtn.addEventListener('click', playPrev);
+    if (nextBtn) nextBtn.addEventListener('click', playNext);
+    if (musicFileInput) musicFileInput.addEventListener('change', e => loadLocalMusic(e.target.files[0]));
 
-    // 上一首按钮
-    if (prevBtn) {
-        prevBtn.addEventListener('click', playPrev);
-    }
-
-    // 下一首按钮
-    if (nextBtn) {
-        nextBtn.addEventListener('click', playNext);
-    }
-
-    // 本地音乐上传
-    if (musicFileInput) {
-        musicFileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                loadLocalMusic(file);
-            }
-        });
-    }
-
-    // 页面可见性变化时处理（可选：暂停/恢复）
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden && isPlaying && audio) {
-            // 页面隐藏时暂停（可选，根据需求）
-            // audio.pause();
-        } else if (!document.hidden && audio && !isPlaying) {
-            // 页面显示时不自动恢复
-        }
-    });
-
-    // 初始化默认音乐
+    // 初始化
     initDefaultAudio();
-    
-    // 自动播放策略：首次用户交互后播放
+
+    // 首次点击自动播放
     let autoPlayAttempted = false;
     function tryAutoPlay() {
         if (!autoPlayAttempted && audio) {
@@ -296,14 +189,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 isPlaying = true;
                 if (playIcon) playIcon.style.display = 'none';
                 if (pauseIcon) pauseIcon.style.display = 'block';
-                autoPlayAttempted = true;
             }).catch(() => {
-                // 自动播放被浏览器阻止，等待用户点击
                 if (musicStatus) musicStatus.textContent = '点击播放按钮开始欣赏古风音乐';
             });
+            autoPlayAttempted = true;
         }
     }
-    
-    // 用户首次点击页面任意位置尝试自动播放
     document.body.addEventListener('click', tryAutoPlay, { once: true });
 });

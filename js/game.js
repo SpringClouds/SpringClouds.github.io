@@ -14,18 +14,45 @@ document.addEventListener('DOMContentLoaded', () => {
   let timer = null;
   let blankIndex = size * size - 1;
 
-  // 古建筑部件（替换原来的数字）
-  const buildingIcons = [
-    "🪨", // 台基
-    "🪵", // 木柱
-    "🔨", // 斗拱
-    "🏛️", // 梁架
-    "🏮", // 飞檐
-    "🧱", // 墙体
-    "🪟", // 花窗
-    "🏯", // 屋顶
-    "台基"
+  // 精致图标 + 文字 一一对应
+ const buildingParts = [
+    { icon: "🌿", text: "草木" },
+    { icon: "🪨", text: "夯土" },
+    { icon: "🔥", text: "陶瓦" },
+    { icon: "🪵", text: "木构" },
+    { icon: "🧱", text: "青砖" },
+    { icon: "🏺", text: "琉璃" },
+    { icon: "⛩️", text: "斗拱" },
+    { icon: "🏯", text: "砖石" }
+
   ];
+
+  // 🔥 精致美观样式（不改动逻辑，只变好看）
+  const style = document.createElement('style');
+  style.textContent = `
+    #puzzleBoard div {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: bold;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      transition: 0.2s;
+    }
+    #puzzleBoard div:hover:not([style*="f1f1f1"]) {
+      transform: scale(1.03);
+      box-shadow: 0 4px 10px rgba(146, 43, 33, 0.2);
+    }
+    #puzzleBoard .icon {
+      font-size: 26px;
+    }
+    #puzzleBoard .text {
+      font-size: 18px;
+      color: #922b21;
+    }
+  `;
+  document.head.appendChild(style);
 
   function init() {
     clearInterval(timer);
@@ -47,13 +74,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const div = document.createElement('div');
       const isBlank = idx === 'blank';
 
-      div.style.fontSize = isBlank ? '20px' : '40px';
-      div.style.background = isBlank ? '#f1f1f1' : '#fff';
-      div.style.color = isBlank ? '#aaa' : '#922b21';
+      div.style.background = isBlank ? '#f1f1f1' : '#ffffff';
+      div.style.color = isBlank ? '#999' : '#922b21';
       div.style.cursor = isBlank ? 'default' : 'pointer';
-      div.innerText = isBlank ? '台基' : buildingIcons[idx];
-      div.dataset.pos = pos;
 
+      if (isBlank) {
+        div.innerText = '空格';
+        div.style.fontSize = '20px';
+      } else {
+        const p = buildingParts[idx];
+        div.innerHTML = `<span class="icon">${p.icon}</span><span class="text">${p.text}</span>`;
+      }
+
+      div.dataset.pos = pos;
       div.addEventListener('click', () => handleClick(pos));
       board.appendChild(div);
     });
