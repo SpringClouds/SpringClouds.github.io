@@ -3,6 +3,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== 内置歌单（古风音乐） ==========
     const playlist = [
         {
+            name: 'BGM',
+            url: 'music/bgm.mp3',
+            cover: 'https://img.icons8.com/fluency/96/000000/music.png'
+        },
+		{
             name: 'Guita',
             url: 'music/jita.mp3',
             cover: 'https://img.icons8.com/fluency/96/000000/music.png'
@@ -12,11 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             url: 'music/huankuai.mp3',
             cover: 'https://img.icons8.com/fluency/96/000000/music.png'
         },
-        {
-            name: 'BGM',
-            url: 'music/bgm.mp3',
-            cover: 'https://img.icons8.com/fluency/96/000000/music.png'
-        },
+        
         {
             name: 'Guita',
             url: 'music/jita.mp3',
