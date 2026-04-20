@@ -1,3 +1,10 @@
+
+/* 强制禁止浏览器自动乱跳 */
+html, body {
+    overflow-anchor: none !important;
+    scroll-behavior: auto !important;
+}
+
 .ink-bg {
     position: fixed;
     top: 0;
